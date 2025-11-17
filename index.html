@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tienda de Motos Clásicas - Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #111827;
+      --bg-alt: #020617;
+      --primary: #ef4444;
+      --primary-soft: #fee2e2;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+      --card-bg: #0b1120;
+      --accent: #22c55e;
+      --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.4);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1f2937, #020617);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Layout base */
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, #020617, #111827);
+      border-right: 1px solid var(--border);
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background: conic-gradient(from 200deg, #ef4444, #f97316, #eab308, #ef4444);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-soft);
+      flex-shrink: 0;
+    }
+
+    .logo span {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .sidebar-title h1 {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .sidebar-title p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .nav-item button {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 999px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    }
+
+    .nav-item button:hover {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text);
+      transform: translateX(2px);
+    }
+
+    .nav-item button.active {
+      background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .nav-item span.badge {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    .sidebar-footer strong {
+      color: var(--accent);
+    }
+
+    /* Header + contenido */
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+    }
+
+    .topbar {
+      padding: 0.8rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      border: none;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .topbar-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .topbar-search {
+      margin-left: auto;
+      max-width: 380px;
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .search-panel {
+      width: 100%;
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 0.3rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.6);
+    }
+
+    .search-panel input[type="search"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 0.25rem 0.5rem;
+      outline: none;
+    }
+
+    .search-panel input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-panel button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: radial-gradient(circle at top left, #22c55e, #16a34a);
+      color: #052e16;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .search-panel button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .breadcrumbs {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .breadcrumbs span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+    }
+
+    .breadcrumbs .separator {
+      opacity: 0.5;
+    }
+
+    .breadcrumbs .current {
+      color: var(--primary-soft);
+      font-weight: 500;
+    }
+
+    .content {
+      padding: 1.2rem 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .content-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .content-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      padding: 0.15rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.07);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Páginas (secciones simuladas) */
+
+    .page {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #020617, #020617 55%, #020617 65%, #000);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.12), transparent 55%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+    }
+
+    .chip {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(55, 65, 81, 0.8);
+    }
+
+    .price {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 0.2rem;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      font-size: 0.8rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .btn-primary {
+      background: radial-gradient(circle at top left, #ef4444, #b91c1c);
+      border: none;
+      color: #fef2f2;
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn:hover {
+      filter: brightness(1.05);
+    }
+
+    /* Panel búsqueda resultados */
+
+    .search-results-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .search-results-info.visible {
+      display: block;
+    }
+
+    .empty-results {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .empty-results.visible {
+      display: block;
+    }
+
+    /* Páginas específicas */
+
+    .page-description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      max-width: 640px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: 1.2rem;
+    }
+
+    .panel {
+      background: linear-gradient(to bottom right, #020617, #01030a);
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      box-shadow: 0 15px 40px rgba(15, 23, 42, 0.8);
+    }
+
+    .panel h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .panel ul {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .panel li::before {
+      content: "• ";
+      color: var(--primary);
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .contact-form label {
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      border-radius: 0.6rem;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: #020617;
+      color: var(--text);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      resize: vertical;
+      min-height: 38px;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .tagline {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 960px) {
+      .sidebar {
+        display: none;
+        position: fixed;
+        z-index: 40;
+        height: auto;
+        max-height: 80vh;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+        border-radius: 0 0 1rem 0;
+      }
+
+      .sidebar.open {
+        display: flex;
+      }
+
+      .mobile-menu-toggle {
+        display: inline-flex;
+      }
+
+      .topbar-title {
+        display: none;
+      }
+
+      .content {
+        padding-inline: 1rem;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .two-col {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .topbar {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+
+      .topbar-search {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .search-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar izquierda -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span>MC</span>
+        </div>
+        <div class="sidebar-title">
+          <h1>Clásicas Legendarias</h1>
+          <p>Tienda demo de motos clásicas</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-section-title">Explorar</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <button class="nav-link active" data-section="inicio">
+              <span>Inicio</span>
+              <span class="badge">Home</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-section="catalogo">
+              <span>Catálogo</span>
+              <span class="badge">12 modelos</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-section="marcas">
+              <span>Marcas</span>
+              <span class="badge">6 marcas</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-section="ofertas">
+              <span>Ofertas &amp; Destacados</span>
+              <span class="badge">-15%</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-section="accesorios">
+              <span>Accesorios</span>
+              <span class="badge">Vintage</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-section="contacto">
+              <span>Contacto</span>
+              <span class="badge">Soporte</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <p><strong>Demo UX</strong> · single-page<br />HTML + CSS + JS, sin backend.</p>
+      </div>
+    </aside>
+
+    <!-- Zona principal -->
+    <main class="main">
+      <!-- Barra superior -->
+      <header class="topbar">
+        <button class="mobile-menu-toggle" id="mobileToggle">☰ Menú</button>
+        <div class="topbar-title">Tienda de Motos Clásicas</div>
+
+        <div class="topbar-search">
+          <form id="searchForm" class="search-panel" autocomplete="off">
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Buscar por modelo, marca o tipo (p.ej. 'Café racer')"
+            />
+            <button type="submit">
+              🔍
+              <span>Buscar</span>
+            </button>
+          </form>
+        </div>
+      </header>
+
+      <!-- Migas de pan -->
+      <nav class="breadcrumbs" aria-label="Migas de pan">
+        <span>📍</span>
+        <span data-breadcrumb="root">Inicio</span>
+        <span class="separator">›</span>
+        <span class="current" data-breadcrumb="current">Panel principal</span>
+      </nav>
+
+      <!-- Contenido -->
+      <section class="content">
+        <div class="content-header">
+          <div>
+            <h2 id="pageTitle">Inicio</h2>
+            <p id="pageSubtitle">
+              Explora una demo de tienda online centrada en motos clásicas, con navegación por migas de pan y búsqueda interna.
+            </p>
+          </div>
+          <div class="pill" id="pagePill">Vista general</div>
+        </div>
+
+        <p class="search-results-info" id="searchInfo"></p>
+        <p class="empty-results" id="emptyResults">
+          No se han encontrado resultados que coincidan con tu búsqueda.
+        </p>
+
+        <!-- Páginas simuladas -->
+
+        <!-- INICIO -->
+        <section class="page active" id="page-inicio">
+          <article class="two-col">
+            <div class="panel">
+              <h3>Bienvenido a Clásicas Legendarias</h3>
+              <p class="page-description">
+                Esta es una maqueta de una tienda online de motos clásicas, pensada para probar patrones de diseño de
+                navegación (migas de pan), diseño responsive y búsqueda interna sin necesidad de backend.
+              </p>
+              <ul>
+                <li>Menú fijo lateral con secciones de la tienda.</li>
+                <li>Migas de pan que se actualizan al cambiar de sección.</li>
+                <li>Panel de búsqueda que filtra el catálogo en vivo.</li>
+                <li>Diseño responsive con grid y flexbox.</li>
+              </ul>
+              <p class="tagline">
+                Prueba a hacer clic en <strong>Catálogo</strong> o a buscar por términos como
+                <em>"Triumph"</em>, <em>"café racer"</em> o <em>"años 70"</em>.
+              </p>
+            </div>
+
+            <div class="panel">
+              <h3>Destacados del garaje</h3>
+              <div class="cards-grid">
+                <div class="card">
+                  <div class="card-inner">
+                    <div class="card-title">Triumph Bonneville T120</div>
+                    <div class="card-subtitle">Clásica inglesa · 1969 · 650 cc</div>
+                    <div class="chip-row">
+                      <span class="chip">Café racer</span>
+                      <span class="chip">Coleccionista</span>
+                    </div>
+                    <div class="price">18.900 €</div>
+                    <div class="btn-row">
+                      <button class="btn btn-primary">Ver detalles</button>
+                      <button class="btn">Añadir a favoritos</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-inner">
+                    <div class="card-title">BMW R90S</div>
+                    <div class="card-subtitle">Touring deportiva · 1974 · 898 cc</div>
+                    <div class="chip-row">
+                      <span class="chip">Touring</span>
+                      <span class="chip">Años 70</span>
+                    </div>
+                    <div class="price">22.500 €</div>
+                    <div class="btn-row">
+                      <button class="btn btn-primary">Ver detalles</button>
+                      <button class="btn">Comparar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- CATÁLOGO -->
+        <section class="page" id="page-catalogo">
+          <p class="page-description">
+            Catálogo general de motos clásicas disponibles. Usa la barra de búsqueda superior para filtrar por marca,
+            modelo, cilindrada o estilo de moto.
+          </p>
+          <div class="cards-grid" id="catalogGrid">
+            <!-- Cada tarjeta tiene data-attributes para la búsqueda interna -->
+            <div
+              class="card product-card"
+              data-keywords="triumph bonneville t120 cafe racer inglesa 1969 650"
+            >
+              <div class="card-inner">
+                <div class="card-title">Triumph Bonneville T120</div>
+                <div class="card-subtitle">1969 · 650 cc · Doble carburador</div>
+                <div class="chip-row">
+                  <span class="chip">Café racer</span>
+                  <span class="chip">Triumph</span>
+                  <span class="chip">Inglaterra</span>
+                </div>
+                <div class="price">18.900 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="bmw r90s touring 1974 898 alemana clasica carenado"
+            >
+              <div class="card-inner">
+                <div class="card-title">BMW R90S</div>
+                <div class="card-subtitle">1974 · 898 cc · Carenado deportivo</div>
+                <div class="chip-row">
+                  <span class="chip">Touring</span>
+                  <span class="chip">BMW</span>
+                  <span class="chip">Años 70</span>
+                </div>
+                <div class="price">22.500 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="honda cb750 four japonesa 1969 superbike cuatro cilindros"
+            >
+              <div class="card-inner">
+                <div class="card-title">Honda CB750 Four</div>
+                <div class="card-subtitle">1969 · 736 cc · 4 cilindros en línea</div>
+                <div class="chip-row">
+                  <span class="chip">Superbike clásica</span>
+                  <span class="chip">Honda</span>
+                  <span class="chip">Japón</span>
+                </div>
+                <div class="price">17.300 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="ducati 900ss sport italiana 1978 desmodromica bicilindrica"
+            >
+              <div class="card-inner">
+                <div class="card-title">Ducati 900 Super Sport</div>
+                <div class="card-subtitle">1978 · 864 cc · Desmodrómica</div>
+                <div class="chip-row">
+                  <span class="chip">Sport</span>
+                  <span class="chip">Ducati</span>
+                  <span class="chip">Italia</span>
+                </div>
+                <div class="price">26.800 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="harley davidson sportster 883 custom americana cruiser"
+            >
+              <div class="card-inner">
+                <div class="card-title">Harley-Davidson Sportster 883</div>
+                <div class="card-subtitle">1989 · 883 cc · V-Twin</div>
+                <div class="chip-row">
+                  <span class="chip">Cruiser</span>
+                  <span class="chip">Harley-Davidson</span>
+                  <span class="chip">USA</span>
+                </div>
+                <div class="price">10.900 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="moto guzzi v7 special italiana cardan clasica turismo"
+            >
+              <div class="card-inner">
+                <div class="card-title">Moto Guzzi V7 Special</div>
+                <div class="card-subtitle">1971 · 757 cc · Transmisión por cardan</div>
+                <div class="chip-row">
+                  <span class="chip">Turismo</span>
+                  <span class="chip">Moto Guzzi</span>
+                  <span class="chip">Italia</span>
+                </div>
+                <div class="price">16.400 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver ficha</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MARCAS -->
+        <section class="page" id="page-marcas">
+          <p class="page-description">
+            Navega por la tienda filtrando por marca. En una implementación real, cada marca te llevaría a un listado
+            específico de modelos.
+          </p>
+          <div class="cards-grid">
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-title">Triumph</div>
+                <div class="card-subtitle">Clásicas británicas icónicas</div>
+                <div class="chip-row">
+                  <span class="chip">Bonneville</span>
+                  <span class="chip">Thruxton</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Ver modelos</button>
+                  <button class="btn">Seguir marca</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-title">BMW</div>
+                <div class="card-subtitle">Boxer touring alemán</div>
+                <div class="chip-row">
+                  <span class="chip">R90S</span>
+                  <span class="chip">R100</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Ver modelos</button>
+                  <button class="btn">Seguir marca</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-title">Honda</div>
+                <div class="card-subtitle">Superbikes japonesas</div>
+                <div class="chip-row">
+                  <span class="chip">CB750</span>
+                  <span class="chip">CB550</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Ver modelos</button>
+                  <button class="btn">Seguir marca</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-title">Ducati</div>
+                <div class="card-subtitle">Deportivas italianas clásicas</div>
+                <div class="chip-row">
+                  <span class="chip">900SS</span>
+                  <span class="chip">750SS</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Ver modelos</button>
+                  <button class="btn">Seguir marca</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-title">Harley-Davidson</div>
+                <div class="card-subtitle">Custom y cruiser americanas</div>
+                <div class="chip-row">
+                  <span class="chip">Sportster</span>
+                  <span class="chip">Shovelhead</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Ver modelos</button>
+                  <button class="btn">Seguir marca</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- OFERTAS -->
+        <section class="page" id="page-ofertas">
+          <p class="page-description">
+            Sección de promociones y motos clásicas destacadas. Ideal para simular reglas de negocio, precios
+            tachados y etiquetas de descuento.
+          </p>
+          <div class="cards-grid">
+            <div
+              class="card product-card"
+              data-keywords="oferta descuento promo triumph bonneville t120"
+            >
+              <div class="card-inner">
+                <div class="card-title">Triumph Bonneville T120 (Reacondicionada)</div>
+                <div class="card-subtitle">1968 · 650 cc · Garantía 12 meses</div>
+                <div class="chip-row">
+                  <span class="chip">-15%</span>
+                  <span class="chip">Reacondicionada</span>
+                </div>
+                <div class="price">
+                  <del style="opacity:0.6;">18.900 €</del> 15.990 €
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver condiciones</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="bmw r90s bundle maletas touring oferta"
+            >
+              <div class="card-inner">
+                <div class="card-title">BMW R90S Pack Touring</div>
+                <div class="card-subtitle">Incluye maletas rígidas y cúpula alta</div>
+                <div class="chip-row">
+                  <span class="chip">Pack accesorio</span>
+                  <span class="chip">Touring</span>
+                </div>
+                <div class="price">
+                  <del style="opacity:0.6;">24.500 €</del> 22.900 €
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver condiciones</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ACCESORIOS -->
+        <section class="page" id="page-accesorios">
+          <p class="page-description">
+            Accesorios y recambios inspirados en el mundo de las motos clásicas: cascos, guantes, escapes, asientos y
+            mucho más.
+          </p>
+          <div class="cards-grid">
+            <div
+              class="card product-card"
+              data-keywords="casco jet vintage cafe racer"
+            >
+              <div class="card-inner">
+                <div class="card-title">Casco Jet Vintage</div>
+                <div class="card-subtitle">Homologado · Estilo años 70</div>
+                <div class="chip-row">
+                  <span class="chip">Café racer</span>
+                  <span class="chip">Vintage</span>
+                </div>
+                <div class="price">210 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver tallas</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="guantes piel clasicos cafe racer marron"
+            >
+              <div class="card-inner">
+                <div class="card-title">Guantes de piel Clásicos</div>
+                <div class="card-subtitle">Piel perforada · Color marrón</div>
+                <div class="chip-row">
+                  <span class="chip">Retro</span>
+                  <span class="chip">Verano</span>
+                </div>
+                <div class="price">79 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Guía de tallas</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="card product-card"
+              data-keywords="escape deportivo moto clasica inox"
+            >
+              <div class="card-inner">
+                <div class="card-title">Escape Deportivo Inox</div>
+                <div class="card-subtitle">Válido para varios modelos clásicos</div>
+                <div class="chip-row">
+                  <span class="chip">Mejora sonido</span>
+                  <span class="chip">Apta ITV*</span>
+                </div>
+                <div class="price">390 €</div>
+                <div class="btn-row">
+                  <button class="btn btn-primary">Añadir al carrito</button>
+                  <button class="btn">Ver compatibilidades</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTACTO -->
+        <section class="page" id="page-contacto">
+          <article class="two-col">
+            <div class="panel">
+              <h3>Contacto y soporte</h3>
+              <p class="page-description">
+                Esta sección simula un formulario de contacto de una tienda online. No envía datos, pero sirve como
+                prototipo visual y de estructura.
+              </p>
+              <form class="contact-form">
+                <label>
+                  Nombre completo
+                  <input type="text" placeholder="Tu nombre y apellidos" />
+                </label>
+                <label>
+                  Email
+                  <input type="email" placeholder="tu@ejemplo.com" />
+                </label>
+                <label>
+                  Asunto
+                  <input type="text" placeholder="Consulta sobre modelo, pedido, etc." />
+                </label>
+                <label>
+                  Mensaje
+                  <textarea rows="4" placeholder="Cuéntanos en qué podemos ayudarte"></textarea>
+                </label>
+                <button type="button" class="btn btn-primary">
+                  Enviar (demo, no envía)
+                </button>
+              </form>
+            </div>
+
+            <div class="panel">
+              <h3>Información de la demo</h3>
+              <ul>
+                <li>No hay backend: todos los cambios son solo visuales.</li>
+                <li>La búsqueda se hace en el cliente, filtrando tarjetas por palabras clave.</li>
+                <li>Las migas de pan se actualizan según la sección activa.</li>
+                <li>El menú lateral se colapsa en móviles y se controla con el botón ☰.</li>
+              </ul>
+              <p class="tagline">
+                Puedes copiar este único archivo <strong>index.html</strong> para usarlo como base de un prototipo de
+                tienda o panel de administración.
+              </p>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // --------- Navegación por secciones (simula varias páginas) ----------
+    const navLinks = document.querySelectorAll(".nav-link");
+    const pages = document.querySelectorAll(".page");
+    const pageTitle = document.getElementById("pageTitle");
+    const pageSubtitle = document.getElementById("pageSubtitle");
+    const pagePill = document.getElementById("pagePill");
+    const breadcrumbRoot = document.querySelector("[data-breadcrumb='root']");
+    const breadcrumbCurrent = document.querySelector("[data-breadcrumb='current']");
+
+    const pageMeta = {
+      inicio: {
+        title: "Inicio",
+        subtitle:
+          "Resumen general de la demo de tienda online de motos clásicas, con navegación por secciones.",
+        pill: "Panel principal",
+        breadcrumb: "Panel principal"
+      },
+      catalogo: {
+        title: "Catálogo de motos",
+        subtitle:
+          "Explora el catálogo demo de motos clásicas. Usa la barra de búsqueda para filtrar modelos.",
+        pill: "Listado de productos",
+        breadcrumb: "Catálogo"
+      },
+      marcas: {
+        title: "Marcas",
+        subtitle:
+          "Entradas por marca para simular navegación agrupada por fabricante.",
+        pill: "Listado de marcas",
+        breadcrumb: "Marcas"
+      },
+      ofertas: {
+        title: "Ofertas y destacados",
+        subtitle:
+          "Ejemplo de tarjetas de producto con precios rebajados y promociones.",
+        pill: "Promociones",
+        breadcrumb: "Ofertas"
+      },
+      accesorios: {
+        title: "Accesorios",
+        subtitle:
+          "Accesorios y recambios para completar la experiencia de la tienda.",
+        pill: "Catálogo de accesorios",
+        breadcrumb: "Accesorios"
+      },
+      contacto: {
+        title: "Contacto",
+        subtitle:
+          "Formulario de contacto y notas sobre la maqueta. No se envían datos reales.",
+        pill: "Soporte",
+        breadcrumb: "Contacto"
+      }
+    };
+
+    function setActiveSection(sectionId) {
+      pages.forEach((page) => {
+        page.classList.toggle("active", page.id === "page-" + sectionId);
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.dataset.section === sectionId);
+      });
+
+      const meta = pageMeta[sectionId];
+      if (meta) {
+        pageTitle.textContent = meta.title;
+        pageSubtitle.textContent = meta.subtitle;
+        pagePill.textContent = meta.pill;
+        breadcrumbRoot.textContent = "Inicio";
+        breadcrumbCurrent.textContent = meta.breadcrumb;
+      }
+      // al cambiar de sección, limpiamos info de la búsqueda
+      resetSearchInfo();
+    }
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const sectionId = link.dataset.section;
+        setActiveSection(sectionId);
+        // cerrar menú móvil al seleccionar
+        sidebar.classList.remove("open");
+      });
+    });
+
+    // --------- Menú móvil ----------
+    const mobileToggle = document.getElementById("mobileToggle");
+    const sidebar = document.getElementById("sidebar");
+
+    mobileToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    // --------- Búsqueda interna ----------
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const productCards = document.querySelectorAll(".product-card");
+    const searchInfo = document.getElementById("searchInfo");
+    const emptyResults = document.getElementById("emptyResults");
+
+    function resetSearchInfo() {
+      searchInfo.textContent = "";
+      searchInfo.classList.remove("visible");
+      emptyResults.classList.remove("visible");
+      productCards.forEach((card) => {
+        card.style.display = "";
+      });
+    }
+
+    function performSearch(query) {
+      const normalized = query.trim().toLowerCase();
+
+      if (!normalized) {
+        resetSearchInfo();
+        return;
+      }
+
+      // si no estamos en catálogo, saltamos a catálogo para mostrar resultados
+      setActiveSection("catalogo");
+
+      let matches = 0;
+      productCards.forEach((card) => {
+        const keywords = (card.dataset.keywords || "").toLowerCase();
+        const text = card.innerText.toLowerCase();
+        const hayCoincidencia =
+          keywords.includes(normalized) || text.includes(normalized);
+
+        if (hayCoincidencia) {
+          card.style.display = "";
+          matches++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      if (matches > 0) {
+        searchInfo.textContent =
+          "Resultados de la búsqueda para \"" + query + "\": " + matches + " coincidencia(s).";
+        searchInfo.classList.add("visible");
+        emptyResults.classList.remove("visible");
+      } else {
+        searchInfo.textContent =
+          "No se han encontrado resultados para \"" + query + "\".";
+        searchInfo.classList.add("visible");
+        emptyResults.classList.add("visible");
+      }
+    }
+
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      performSearch(searchInput.value);
+    });
+
+    // Búsqueda reactiva opcional (al dejar de teclear un instante)
+    let searchTimeout;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(searchInput.value);
+      }, 300);
+    });
+  </script>
+</body>
+</html>
