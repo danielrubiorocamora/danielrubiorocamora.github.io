@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejemplo Web Responsiva</title>
+
+  <style>
+    /* =========================
+       RESET BÁSICO
+    ========================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px; /* base para rem */
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      color: #222;
+      background: #f5f5f5;
+      padding: 1rem;
+    }
+
+    img {
+      max-width: 100%;   /* imagenes flexibles */
+      height: auto;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* =========================
+       CONTENEDOR PRINCIPAL
+    ========================== */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.08);
+      display: grid;
+      gap: 1.5rem;
+
+      /* Grid fluida básica: 1 columna en móvil
+         El resto se ajusta con media queries */
+      grid-template-areas:
+        "header"
+        "hero"
+        "main"
+        "aside"
+        "footer";
+    }
+
+    header {
+      grid-area: header;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: #eee;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    nav a:hover {
+      background: #ddd;
+      transform: translateY(-1px);
+    }
+
+    /* =========================
+       HERO (CABECERA VISUAL)
+    ========================== */
+    .hero {
+      grid-area: hero;
+      display: grid;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .hero-texto h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem); /* tamaño adaptable */
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-texto p {
+      font-size: 1rem;
+      max-width: 40rem;
+      color: #555;
+    }
+
+    .hero-imagen {
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+
+    .hero-imagen img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      max-height: 300px;
+    }
+
+    /* =========================
+       ÁREA PRINCIPAL / ASIDE
+    ========================== */
+    main {
+      grid-area: main;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      gap: 1rem;
+      /* rejilla fluida con minmax */
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      border-radius: 0.75rem;
+      padding: 1rem;
+      background: #fafafa;
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    aside {
+      grid-area: aside;
+      background: #f9fafb;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      border: 1px solid #eee;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      grid-area: footer;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #666;
+      padding-top: 0.5rem;
+      border-top: 1px solid #eee;
+    }
+
+    /* =========================
+       MEDIA QUERIES
+    ========================== */
+
+    /* A partir de 768px cambiamos la disposición:
+       header arriba, hero en 2 columnas,
+       main y aside en columnas. */
+    @media (min-width: 768px) {
+      .page {
+        padding: 2rem;
+        grid-template-columns: 2fr 1fr;
+        grid-template-areas:
+          "header  header"
+          "hero    hero"
+          "main    aside"
+          "footer  footer";
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      }
+    }
+
+    /* A partir de 1024px ajustamos la rejilla para que el hero
+       sea más compacto y el contenido respire más. */
+    @media (min-width: 1024px) {
+      body {
+        padding: 2rem;
+      }
+
+      .page {
+        grid-template-columns: 3fr 1.4fr;
+      }
+
+      .hero-texto p {
+        font-size: 1.05rem;
+      }
+
+      nav {
+        gap: 1rem;
+        font-size: 0.95rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo">Mi Web Responsiva</div>
+      <nav>
+        <a href="#inicio">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#blog">Blog</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+      <div class="hero-texto">
+        <h1>Diseño responsivo con CSS moderno</h1>
+        <p>
+          Este ejemplo muestra rejillas fluidas, unidades relativas, media queries,
+          contenido adaptable e imágenes flexibles. Reduce o aumenta el tamaño de
+          la ventana para ver cómo todo se reorganiza de forma suave.
+        </p>
+      </div>
+      <div class="hero-imagen">
+        <!-- Puedes cambiar la URL por cualquier otra imagen -->
+        <img src="https://picsum.photos/900/600?random=1" alt="Ejemplo de imagen responsiva">
+      </div>
+    </section>
+
+    <main>
+      <section id="servicios">
+        <h2>Sección principal</h2>
+        <p style="margin: 0.5rem 0 1rem;">
+          A continuación, una rejilla de tarjetas que se adapta al ancho
+          disponible gracias a <code>auto-fit</code> y <code>minmax()</code>.
+        </p>
+
+        <div class="cards-grid">
+          <article class="card">
+            <h3>Rejillas fluidas</h3>
+            <p>
+              Las columnas se adaptan automáticamente, evitando barras de scroll horizontales
+              y aprovechando mejor el espacio en pantallas grandes y pequeñas.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Unidades relativas</h3>
+            <p>
+              Usamos <code>rem</code>, <code>%</code>, <code>vh</code> y <code>vw</code>,
+              haciendo que el diseño sea flexible cuando cambia el tamaño de fuente base
+              o el tamaño de la ventana.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Media queries</h3>
+            <p>
+              A partir de ciertos anchos (768px, 1024px), reorganizamos la disposición de
+              las áreas para mejorar la legibilidad y el uso del espacio.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Contenido adaptable</h3>
+            <p>
+              El texto, las imágenes y el layout se ajustan para conservar una buena
+              experiencia de usuario en móvil, tablet y escritorio.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="blog">
+        <h2 style="margin-top: 2rem;">Otro bloque de contenido</h2>
+        <p style="margin-top: 0.5rem;">
+          Aquí podrías añadir una lista de artículos, una galería o cualquier
+          otro contenido. Las imágenes de esta sección también son flexibles:
+        </p>
+        <div style="margin-top: 1rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+          <img src="https://picsum.photos/600/400?random=2" alt="Imagen 2 responsiva">
+          <img src="https://picsum.photos/600/400?random=3" alt="Imagen 3 responsiva">
+          <img src="https://picsum.photos/600/400?random=4" alt="Imagen 4 responsiva">
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <h2>Contenido lateral</h2>
+      <p style="margin-top: 0.5rem;">
+        Este <strong>aside</strong> cambia de posición según el ancho de la pantalla.
+        En móvil se muestra debajo del contenido principal, y en pantallas más grandes
+        aparece a la derecha como columna lateral.
+      </p>
+      <p style="margin-top: 0.5rem;">
+        Aquí podrías colocar un formulario corto, enlaces rápidos, un pequeño
+        menú secundario, etc.
+      </p>
+    </aside>
+
+    <footer id="contacto">
+      © 2025 - Ejemplo de diseño responsivo con rejillas fluidas e imágenes flexibles.
+    </footer>
+  </div>
+</body>
+</html>
