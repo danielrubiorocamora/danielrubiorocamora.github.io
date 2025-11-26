@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Puzzle Drag & Drop</title>
+<style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:linear-gradient(135deg,#e0f4ff,#ffe8f3);
+    }
+    .game{
+        background:#ffffffdd;
+        padding:2.5rem 3rem;
+        border-radius:24px;
+        box-shadow:0 18px 40px rgba(0,0,0,.12);
+        text-align:center;
+    }
+    h1{
+        font-size:2.1rem;
+        margin-bottom:.25rem;
+    }
+    h1 span{font-size:2.3rem;margin-left:.25rem}
+    p{margin-bottom:1.8rem;color:#555}
+    .row{
+        display:flex;
+        gap:1rem;
+        justify-content:center;
+        margin-bottom:1.5rem;
+        flex-wrap:wrap;
+    }
+    .piece,.slot{
+        width:90px;
+        height:90px;
+        border-radius:20px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:2rem;
+        cursor:grab;
+        user-select:none;
+        transition:transform .15s,box-shadow .15s,background .2s,color .2s;
+    }
+    .piece{
+        color:#fff;
+        box-shadow:0 8px 18px rgba(0,0,0,.18);
+    }
+    .piece[data-id="A"]{background:#ff6b6b;}
+    .piece[data-id="B"]{background:#4dabf7;}
+    .piece[data-id="C"]{background:#51cf66;}
+    .piece.dragging{
+        opacity:.85;
+        transform:translateY(-4px) scale(1.02);
+        box-shadow:0 14px 28px rgba(0,0,0,.25);
+        cursor:grabbing;
+    }
+    .slot{
+        border:2px dashed #b0b0b0;
+        background:#f6f7fb;
+        color:#b0b0b0;
+        font-weight:500;
+        cursor:default;
+    }
+    .slot.over{
+        border-style:solid;
+        border-color:#845ef7;
+        background:#ece8ff;
+    }
+    .slot.filled{
+        border:none;
+        background:#fff;
+        box-shadow:0 8px 18px rgba(0,0,0,.12);
+        color:#333;
+        font-size:1.2rem;
+    }
+    .status{
+        min-height:1.5rem;
+        font-weight:600;
+        color:#555;
+    }
+    .status.ok{color:#2f9e44;}
+    .status.fail{color:#e03131;}
+    button{
+        margin-top:1.2rem;
+        padding:.55rem 1.2rem;
+        border-radius:999px;
+        border:none;
+        background:#845ef7;
+        color:#fff;
+        font-size:.95rem;
+        cursor:pointer;
+        box-shadow:0 8px 16px rgba(132,94,247,.35);
+        transition:background .15s,transform .1s,box-shadow .1s;
+    }
+    button:hover{
+        background:#7048e8;
+        transform:translateY(-1px);
+        box-shadow:0 10px 20px rgba(132,94,247,.45);
+    }
+</style>
+</head>
+<body>
+<div class="game">
+    <h1>Puzzle Drag & Drop <span>🧩</span></h1>
+    <p>Arrastra cada ficha de color hasta su casilla con la misma letra.</p>
+
+    <div class="row" id="pieces-row">
+        <div class="piece" draggable="true" data-id="A">A</div>
+        <div class="piece" draggable="true" data-id="B">B</div>
+        <div class="piece" draggable="true" data-id="C">C</div>
+    </div>
+
+    <div class="row" id="slots-row">
+        <div class="slot" data-id="A">A</div>
+        <div class="slot" data-id="B">B</div>
+        <div class="slot" data-id="C">C</div>
+    </div>
+
+    <div class="status" id="status"></div>
+    <button id="reset">Reiniciar</button>
+</div>
+
+<script>
+(function () {
+    const piecesRow = document.getElementById("pieces-row");
+    const pieces = Array.from(document.querySelectorAll(".piece"));
+    const slots = document.querySelectorAll(".slot");
+    const status = document.getElementById("status");
+    const resetBtn = document.getElementById("reset");
+
+    // Mezclar fichas
+    shuffle(pieces).forEach(p => piecesRow.appendChild(p));
+
+    let dragged = null;
+
+    pieces.forEach(piece => {
+        piece.addEventListener("dragstart", e => {
+            dragged = piece;
+            piece.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", piece.dataset.id);
+        });
+        piece.addEventListener("dragend", () => {
+            dragged && dragged.classList.remove("dragging");
+            dragged = null;
+        });
+    });
+
+    slots.forEach(slot => {
+        slot.addEventListener("dragover", e => {
+            e.preventDefault();
+            if (!slot.classList.contains("filled")) slot.classList.add("over");
+        });
+        slot.addEventListener("dragleave", () => {
+            slot.classList.remove("over");
+        });
+        slot.addEventListener("drop", e => {
+            e.preventDefault();
+            slot.classList.remove("over");
+            if (!dragged || slot.classList.contains("filled")) return;
+
+            const pieceId = dragged.dataset.id;
+            const slotId = slot.dataset.id;
+
+            if (pieceId === slotId) {
+                slot.classList.add("filled");
+                slot.textContent = dragged.textContent + " ✅";
+                dragged.setAttribute("draggable", "false");
+                dragged.style.opacity = "0.25";
+                status.textContent = "¡Bien! " + pieceId + " está en su lugar.";
+                status.className = "status ok";
+                checkWin();
+            } else {
+                status.textContent = "Esa ficha no va ahí. Prueba otra casilla.";
+                status.className = "status fail";
+            }
+        });
+    });
+
+    resetBtn.addEventListener("click", () => {
+        // Reset fichas
+        pieces.forEach(p => {
+            p.setAttribute("draggable","true");
+            p.style.opacity = "1";
+        });
+        // Reset casillas
+        slots.forEach(s => {
+            s.classList.remove("filled","over");
+            s.textContent = s.dataset.id;
+        });
+        status.textContent = "";
+        status.className = "status";
+        shuffle(pieces).forEach(p => piecesRow.appendChild(p));
+    });
+
+    function checkWin() {
+        const allFilled = Array.from(slots).every(s => s.classList.contains("filled"));
+        if (allFilled) {
+            status.textContent = "🎉 ¡Puzzle completo, muy bien!";
+            status.className = "status ok";
+        }
+    }
+
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+})();
+</script>
+</body>
+</html>
