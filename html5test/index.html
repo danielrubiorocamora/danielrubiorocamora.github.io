@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Multimedia en HTML5 – TV YouTube</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --primary: #b2004d;
+      --bg: #f8f8fb;
+      --text: #222;
+      --muted: #666;
+      --accent: #ffcc33;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 980px;
+      width: 100%;
+      background: #fff;
+      border-radius: 18px;
+      padding: 2.5rem 2.5rem 3rem;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* detalle decorativo tipo diapositiva */
+    .container::before {
+      content: "";
+      position: absolute;
+      left: -80px;
+      bottom: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #fff 25%, var(--primary) 26%, var(--primary) 60%, transparent 61%);
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    h1 strong {
+      color: var(--primary);
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    ol {
+      padding-left: 1.4rem;
+      margin-bottom: 2rem;
+    }
+
+    ol > li {
+      margin-bottom: 0.9rem;
+    }
+
+    .sub-list {
+      list-style: circle;
+      margin-top: 0.4rem;
+      padding-left: 1.2rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Televisión */
+    .tv-wrapper {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 2.2rem;
+      align-items: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 800px) {
+      .tv-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tv {
+      position: relative;
+      width: 100%;
+      padding: 1.3rem;
+      background: linear-gradient(145deg, #2b2b33, #15151a);
+      border-radius: 28px;
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.4),
+        inset 0 0 0 4px rgba(255,255,255,0.05);
+    }
+
+    .tv-frame-top {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 42%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .tv-screen {
+      position: relative;
+      background: #000;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 3px solid #000;
+    }
+
+    /* El iframe de YouTube ocupará toda la pantalla de la TV */
+    #player {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+    }
+
+    .tv-controls-light {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e84545;
+      box-shadow:
+        0 0 0 3px rgba(255,255,255,0.05),
+        0 0 10px rgba(232,69,69,0.8);
+    }
+
+    .tv-stand {
+      margin-top: 1.3rem;
+      display: flex;
+      justify-content: center;
+      gap: 2.4rem;
+    }
+
+    .tv-leg {
+      width: 60px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #333, #111);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+    }
+
+    /* Controles personalizados */
+    .controls-panel {
+      background: #f5f5f9;
+      border-radius: 18px;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid #e3e3ef;
+    }
+
+    .controls-title {
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-bottom: 0.6rem;
+    }
+
+    button.control-btn {
+      border: none;
+      cursor: pointer;
+      padding: 0.55rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: #fff;
+      color: #222;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+    }
+
+    button.control-btn span.icon {
+      font-size: 1.1rem;
+    }
+
+    button.control-btn.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button.control-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    }
+
+    button.control-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .controls-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(255,204,51,0.8);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>
+      Practicar el uso de <strong>multimedia en HTML5</strong>, integrando un vídeo
+      de YouTube con controles personalizados y un diseño creativo.
+    </h1>
+    <p class="subtitle">
+      En esta actividad vas a incrustar un vídeo de YouTube, diseñar una “televisión”
+      con HTML + CSS y crear tus propios controles con JavaScript.
+    </p>
+
+    <section>
+      <h2>¿Qué vas a hacer?</h2>
+      <ol>
+        <li>
+          <strong>Insertar un vídeo de YouTube</strong> en tu página usando la API de iframes.
+        </li>
+        <li>
+          <strong>Diseñar una “televisión” con HTML + CSS:</strong>
+          <ul class="sub-list">
+            <li>marco</li>
+            <li>pantalla</li>
+            <li>patas o base</li>
+            <li>estilo personalizado</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Añadir controles personalizados en JavaScript:</strong>
+          <ul class="sub-list">
+            <li>▶ Play</li>
+            <li>⏸ Pausa</li>
+            <li>🔇 Mute / Unmute</li>
+            <li>(opcional) ⏹ Stop</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Conectar los botones a la API</strong> para controlar el vídeo.
+        </li>
+      </ol>
+    </section>
+
+    <section class="tv-wrapper" aria-label="Televisión con vídeo y controles">
+      <!-- Televisión -->
+      <div class="tv">
+        <div class="tv-frame-top"></div>
+        <div class="tv-controls-light"></div>
+
+        <div class="tv-screen">
+          <!-- El reproductor de YouTube aparecerá aquí -->
+          <div id="player"></div>
+        </div>
+
+        <div class="tv-stand">
+          <div class="tv-leg"></div>
+          <div class="tv-leg"></div>
+        </div>
+      </div>
+
+      <!-- Controles personalizados -->
+      <aside class="controls-panel">
+        <div class="controls-title">Controles personalizados</div>
+        <div class="btn-row">
+          <button id="playBtn" class="control-btn primary">
+            <span class="icon">▶</span> Play
+          </button>
+          <button id="pauseBtn" class="control-btn">
+            <span class="icon">⏸</span> Pausa
+          </button>
+          <button id="muteBtn" class="control-btn">
+            <span class="icon" id="muteIcon">🔇</span>
+            <span id="muteText">Mute</span>
+          </button>
+          <button id="stopBtn" class="control-btn">
+            <span class="icon">⏹</span> Stop
+          </button>
+        </div>
+        <p class="controls-note">
+          <span class="dot"></span>
+          Estos botones usan la API de iframes de YouTube para controlar el vídeo.
+        </p>
+      </aside>
+    </section>
+  </main>
+
+  <!-- API de YouTube IFrame -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    // Variable global que usará la API de YouTube
+    let player;
+
+    // Esta función la llama automáticamente la API cuando está lista
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        videoId: 'M7lc1UVf-VE', // ID del vídeo (puedes cambiarlo por otro)
+        playerVars: {
+          modestbranding: 1,
+          rel: 0,
+          controls: 0, // ocultamos los controles por defecto
+        }
+      });
+    }
+
+    // Conectamos los botones a la API
+    document.addEventListener('DOMContentLoaded', () => {
+      const playBtn = document.getElementById('playBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const muteBtn = document.getElementById('muteBtn');
+      const muteText = document.getElementById('muteText');
+      const muteIcon = document.getElementById('muteIcon');
+      const stopBtn = document.getElementById('stopBtn');
+
+      playBtn.addEventListener('click', () => {
+        if (player && player.playVideo) {
+          player.playVideo();
+        }
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        if (player && player.pauseVideo) {
+          player.pauseVideo();
+        }
+      });
+
+      muteBtn.addEventListener('click', () => {
+        if (!player) return;
+
+        if (player.isMuted && player.isMuted()) {
+          player.unMute();
+          muteText.textContent = 'Mute';
+          muteIcon.textContent = '🔇';
+        } else {
+          player.mute();
+          muteText.textContent = 'Unmute';
+          muteIcon.textContent = '🔊';
+        }
+      });
+
+      stopBtn.addEventListener('click', () => {
+        if (player && player.stopVideo) {
+          player.stopVideo();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
