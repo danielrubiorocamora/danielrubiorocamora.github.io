@@ -30,4 +30,377 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text-main);
       /* Background with multiple gradients */
-      bac
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.25), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #0b1120 45%, #111827 100%);
+    }
+
+    .shell {
+      max-width: 1100px;
+      width: 100%;
+      border-radius: 24px;
+      padding: 2.5rem;
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.2), transparent 55%),
+        radial-gradient(circle at bottom left, rgba(248, 250, 252, 0.05), transparent 60%),
+        rgba(15, 23, 42, 0.97);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.3),
+        0 24px 60px rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(24px);
+    }
+
+    .title-area {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .title-area h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      /* text-shadow demo */
+      text-shadow:
+        0 0 10px rgba(56, 189, 248, 0.4),
+        0 0 25px rgba(129, 140, 248, 0.5);
+      background: linear-gradient(90deg, #38bdf8, #a855f7, #f97316);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .title-area p {
+      margin: 0.6rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card {
+      padding: 1.5rem 1.7rem;
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.22), transparent 60%), #020617;
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      /* subtle conic “border glow” using background-clip */
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: conic-gradient(
+        from 180deg,
+        rgba(56, 189, 248, 0.3),
+        rgba(168, 85, 247, 0.45),
+        rgba(249, 115, 22, 0.45),
+        rgba(34, 197, 94, 0.4),
+        rgba(56, 189, 248, 0.3)
+      );
+      opacity: 0.0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #e5e7eb;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .card p {
+      margin: 0 0 1.2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .field label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+    }
+
+    .field input[type="text"],
+    .field input[type="email"] {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.55rem 0.9rem;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background: rgba(15, 23, 42, 0.9);
+      outline: none;
+      box-shadow:
+        /* “border-shadow” effect with spread radius */
+        0 0 0 1px rgba(30, 64, 175, 0.8),
+        0 0 12px 2px rgba(59, 130, 246, 0.65);
+      transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .field input[type="text"]:focus,
+    .field input[type="email"]:focus {
+      border-color: rgba(129, 140, 248, 1);
+      box-shadow:
+        0 0 0 1px rgba(129, 140, 248, 1),
+        0 0 22px 3px rgba(129, 140, 248, 0.9);
+      background: radial-gradient(circle at top left, rgba(129, 140, 248, 0.16), rgba(15, 23, 42, 0.95));
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .btn {
+      position: relative;
+      border: none;
+      cursor: pointer;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.85rem;
+      border-radius: 999px;
+      color: #0b1120;
+      background-image: linear-gradient(135deg, #38bdf8, #a855f7, #f97316);
+      background-size: 200% 200%;
+      box-shadow:
+        0 12px 30px rgba(56, 189, 248, 0.6),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      text-shadow: 0 1px 4px rgba(15, 23, 42, 0.9);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-position 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background-position: 100% 0%;
+      box-shadow:
+        0 14px 36px rgba(168, 85, 247, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 1);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow:
+        0 8px 18px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 1);
+    }
+
+    /* Card 2 specific: radial gradient button + subtle border-shadow */
+    .btn-soft {
+      background-image: radial-gradient(circle at 0% 0%, #22c55e, #16a34a, #166534);
+      color: #ecfdf5;
+      box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.5),
+        0 16px 34px rgba(22, 163, 74, 0.9);
+    }
+
+    .btn-soft:hover {
+      box-shadow:
+        0 0 0 1px rgba(190, 242, 100, 0.9),
+        0 22px 42px rgba(132, 204, 22, 0.95);
+    }
+
+    /* Card 3: conic gradient border via pseudo-element */
+    .conic-wrapper {
+      position: relative;
+      padding: 1px;
+      border-radius: var(--radius-xl);
+      background: conic-gradient(
+        from 0deg,
+        #38bdf8,
+        #a855f7,
+        #f97316,
+        #22c55e,
+        #38bdf8
+      );
+    }
+
+    .conic-inner {
+      border-radius: inherit;
+      padding: 1.1rem 1.15rem;
+      background: #020617;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    }
+
+    /* Card 4: repeating-linear-gradient strip */
+    .strip {
+      height: 6px;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+      background-image: repeating-linear-gradient(
+        135deg,
+        rgba(56, 189, 248, 1) 0,
+        rgba(56, 189, 248, 1) 8px,
+        rgba(129, 140, 248, 1) 8px,
+        rgba(129, 140, 248, 1) 16px,
+        rgba(249, 115, 22, 1) 16px,
+        rgba(249, 115, 22, 1) 24px
+      );
+      box-shadow:
+        0 0 12px rgba(56, 189, 248, 0.7),
+        0 0 22px rgba(249, 115, 22, 0.7);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .toggle-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .toggle {
+      position: relative;
+      width: 54px;
+      height: 28px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 0% 50%, #22c55e, #166534);
+      box-shadow:
+        0 0 0 1px rgba(21, 128, 61, 1),
+        0 16px 30px rgba(21, 128, 61, 0.95);
+    }
+
+    .toggle::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #9ca3af);
+      box-shadow:
+        0 3px 6px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    /* Small footer text */
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="title-area">
+      <h1>Gradients & Shadows Lab</h1>
+      <p>Centered UI controls exploring <code>box-shadow</code>, <code>text-shadow</code> and multiple CSS gradients.</p>
+    </header>
+
+    <section class="grid">
+      <!-- Card 1: Text shadow + linear gradient button -->
+      <article class="card">
+        <h2>Linear Gradient Button</h2>
+        <p>Button with animated <code>linear-gradient</code> background and layered <code>box-shadow</code>.</p>
+
+        <div class="field">
+          <label for="name1">Name</label>
+          <input id="name1" type="text" placeholder="Type something…" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn">Primary Action</button>
+          <button class="btn" style="background-image:linear-gradient(135deg,#4ade80,#22c55e,#16a34a);">
+            Secondary
+          </button>
+        </div>
+      </article>
+
+      <!-- Card 2: Radial gradient + soft border-shadow -->
+      <article class="card">
+        <h2>Radial Gradient Input</h2>
+        <p>Focused inputs use a subtle <code>radial-gradient</code> glow and “border-shadow” using spread values.</p>
+
+        <div class="field">
+          <label for="email2">Email</label>
+          <input id="email2" type="email" placeholder="you@example.com" />
+        </div>
+
+        <div class="field">
+          <label for="tag2">Tag</label>
+          <input id="tag2" type="text" placeholder="#gradient-lab" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-soft">Save</button>
+        </div>
+      </article>
+
+      <!-- Card 3: Conic gradient border around inner panel -->
+      <article class="card">
+        <h2>Conic Border Panel</h2>
+        <p><code>conic-gradient</code> used as a border ring, with the content inside a dark panel.</p>
+
+        <div class="conic-wrapper">
+          <div class="conic-inner">
+            <div class="field">
+              <label for="user3">Username</label>
+              <input id="user3" type="text" placeholder="gradient_explorer" />
+            </div>
+
+            <div class="btn-row">
+              <button class="btn" style="background-image:linear-gradient(90deg,#38bdf8,#a855f7);">
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 4: Repeating-linear-gradient strip + toggle -->
+      <article class="card">
+        <h2>Repeating Gradient Strip</h2>
+        <p>A decorative header bar using <code>repeating-linear-gradient</code> plus a soft toggle with <code>radial-gradient</code>.</p>
+
+        <div class="strip"></div>
+
+        <div class="toggle-row">
+          <span class="toggle-label">Experimental mode</span>
+          <div class="toggle"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top:1.2rem;">
+          <button class="btn" style="background-image:linear-gradient(135deg,#f97316,#eab308,#22c55e);">
+            Apply
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <footer class="footer">
+      Play with the CSS and tweak colors, shadows and gradients to explore more combinations.
+    </footer>
+  </main>
+</body>
+</html>
