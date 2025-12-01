@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Responsive Grid Layout Example</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #333;
+    }
+
+    /* Grid container */
+    .layout {
+      display: grid;
+      grid-template-areas:
+        "header  header"
+        "sidebar main"
+        "footer  footer";
+      grid-template-columns: 250px 1fr;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    header {
+      grid-area: header;
+      background: #1f2933;
+      color: #ffffff;
+      padding: 15px 20px;
+      border-radius: 6px;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+    }
+
+    nav {
+      grid-area: sidebar;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 15px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+    }
+
+    nav h2 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    nav ul {
+      list-style: none;
+    }
+
+    nav li {
+      margin-bottom: 8px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #2563eb;
+    }
+
+    main {
+      grid-area: main;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 15px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+    }
+
+    main h2 {
+      margin-bottom: 10px;
+    }
+
+    main p {
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      grid-area: footer;
+      background: #1f2933;
+      color: #ffffff;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* Viewport width label */
+    .viewport-width {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #4b5563;
+      color: #ffffff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    /* Responsive: under 750px width */
+    @media (max-width: 750px) {
+      .layout {
+        grid-template-areas:
+          "header"
+          "sidebar"
+          "main"
+          "footer";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr auto;
+      }
+
+      nav {
+        order: 1; /* logically appears after header, before main */
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Label with current viewport width -->
+  <div id="viewportWidth" class="viewport-width">Width: </div>
+
+  <div class="layout">
+    <header>
+      <h1>Responsive CSS Grid Layout</h1>
+      <p>Resize the window to see the layout adapt.</p>
+    </header>
+
+    <nav>
+      <h2>Navigation</h2>
+      <ul>
+        <li><a href="#">Link 1</a></li>
+        <li><a href="#">Link 2</a></li>
+        <li><a href="#">Link 3</a></li>
+        <li><a href="#">Link 4</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <h2>Main Content</h2>
+      <p>
+        This is the main content area. On large screens, it appears to the right
+        of the sidebar. On small screens (under 750px), the sidebar moves above
+        this content and everything stacks vertically for better visibility.
+      </p>
+      <p>
+        Try rotating your device or changing the browser width to see the grid
+        reorganize itself.
+      </p>
+    </main>
+
+    <footer>
+      © 2025 Responsive Grid Example
+    </footer>
+  </div>
+
+  <script>
+    function updateViewportWidth() {
+      var label = document.getElementById("viewportWidth");
+      if (label) {
+        label.textContent = "Width: " + window.innerWidth + "px";
+      }
+    }
+
+    window.addEventListener("load", updateViewportWidth);
+    window.addEventListener("resize", updateViewportWidth);
+  </script>
+</body>
+</html>
