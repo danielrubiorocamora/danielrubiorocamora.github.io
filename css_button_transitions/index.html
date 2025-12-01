@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Button Transition Playground</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #111827;
+      --text: #e5e7eb;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --accent-3: #f97316;
+      --accent-4: #a855f7;
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .page {
+      max-width: 1100px;
+      width: 100%;
+      background: linear-gradient(135deg, #020617, #020617 50%, #030712 100%);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.85);
+      padding: 2rem 2.5rem 2.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      margin-top: 0.4rem;
+      color: #9ca3af;
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.1rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1rem 1.1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.7rem;
+    }
+
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      min-height: 2.4em;
+    }
+
+    .button-wrap {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: #6b7280;
+    }
+
+    /* Base button style */
+    .demo-btn {
+      position: relative;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      outline: none;
+      /* Generic safe transition */
+      transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+    }
+
+    .demo-btn span.dot {
+      width: 0.4rem;
+      height: 0.4rem;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .demo-btn:focus-visible {
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.7),
+                  0 0 0 4px rgba(15, 23, 42, 0.9);
+    }
+
+    /* 1. Simple color fade */
+    .btn-fade {
+      background: #0b1120;
+    }
+
+    .btn-fade:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #020617;
+    }
+
+    /* 2. Scale on hover */
+    .btn-scale {
+      background: linear-gradient(135deg, #0b1120, #020617);
+    }
+
+    .btn-scale:hover {
+      transform: scale(1.08);
+      box-shadow: 0 14px 35px rgba(56, 189, 248, 0.35);
+      border-color: var(--accent);
+    }
+
+    /* 3. Soft shadow & lift */
+    .btn-soft-shadow {
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-soft-shadow:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.9);
+      background: radial-gradient(circle at top left, #1e293b, #020617);
+    }
+
+    /* 4. Pill morph (border radius & width) */
+    .btn-morph {
+      border-radius: 0.7rem;
+      padding-inline: 1rem;
+      transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        border-radius 0.3s ease,
+        padding-inline 0.3s ease,
+        letter-spacing 0.3s ease;
+    }
+
+    .btn-morph:hover {
+      border-radius: 999px;
+      padding-inline: 1.5rem;
+      letter-spacing: 0.12em;
+      background: linear-gradient(120deg, var(--accent-3), var(--accent-4));
+      border-color: transparent;
+      color: #020617;
+    }
+
+    /* 5. Border glow (using box-shadow) */
+    .btn-glow {
+      border-color: rgba(129, 140, 248, 0.7);
+      background: radial-gradient(circle at top, #020617, #020617);
+      transition:
+        box-shadow 0.35s ease,
+        border-color 0.35s ease,
+        background 0.35s ease;
+    }
+
+    .btn-glow:hover {
+      box-shadow:
+        0 0 8px rgba(129, 140, 248, 0.7),
+        0 0 22px rgba(129, 140, 248, 0.45);
+      border-color: #818cf8;
+      background: radial-gradient(circle at top, #111827, #020617);
+    }
+
+    /* 6. Slide & underline reveal */
+    .btn-slide {
+      overflow: hidden;
+      background: #020617;
+      border-color: rgba(156, 163, 175, 0.7);
+    }
+
+    .btn-slide::after {
+      content: "";
+      position: absolute;
+      inset: auto 12% -2px 12%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-3));
+      transform: translateX(-110%);
+      transition: transform 0.28s ease;
+    }
+
+    .btn-slide:hover::after {
+      transform: translateX(0);
+    }
+
+    .btn-slide:hover {
+      color: var(--accent);
+    }
+
+    /* 7. Rotate & color swap */
+    .btn-rotate {
+      background: linear-gradient(135deg, #0f172a, #020617);
+      transition:
+        transform 0.35s cubic-bezier(0.19, 1, 0.22, 1),
+        background 0.35s ease,
+        box-shadow 0.35s ease;
+    }
+
+    .btn-rotate:hover {
+      transform: translateY(-2px) rotate(-2deg);
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow: 0 18px 40px rgba(34, 197, 94, 0.35);
+      color: #020617;
+    }
+
+    /* 8. Gradient sweep */
+    .btn-gradient {
+      background-image: linear-gradient(120deg, #0ea5e9, #22c55e, #eab308);
+      background-size: 250% 250%;
+      border-color: transparent;
+      transition:
+        background-position 0.45s ease-out,
+        box-shadow 0.45s ease-out;
+    }
+
+    .btn-gradient:hover {
+      background-position: 100% 0;
+      box-shadow: 0 16px 40px rgba(234, 179, 8, 0.5);
+    }
+
+    /* 9. Delayed / staged transition */
+    .btn-delayed {
+      background: #020617;
+      border-color: rgba(156, 163, 175, 0.6);
+      transition:
+        background-color 0.1s ease-in,
+        color 0.1s ease-in 0.05s,
+        transform 0.3s ease-out 0.08s,
+        box-shadow 0.3s ease-out 0.08s;
+    }
+
+    .btn-delayed:hover {
+      background: var(--accent-2);
+      color: #020617;
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 14px 32px rgba(34, 197, 94, 0.45);
+    }
+
+    /* 10. Press effect (active state) */
+    .btn-press {
+      background: #020617;
+      border-color: rgba(148, 163, 184, 0.7);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.9);
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        background 0.22s ease-out;
+    }
+
+    .btn-press:hover {
+      background: #020617;
+    }
+
+    .btn-press:active {
+      transform: translateY(3px) scale(0.97);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+      background: #111827;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 1.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #6b7280;
+      row-gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .legend {
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .legend-swatch {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.4);
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 1.4rem 1.2rem 1.6rem;
+        border-radius: 1.1rem;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>Button Transition Playground</h1>
+      <p class="subtitle">
+        Hover and click each button to see different CSS transition styles.
+        Useful for showing customers design options.
+      </p>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <div>
+          <div class="card-title">1. Simple color fade</div>
+          <p class="card-desc">
+            Classic background + text color transition. Clean and subtle.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-fade">
+            <span class="dot"></span>
+            Hover me
+          </button>
+        </div>
+        <p class="hint">Transition: <code>background-color, color, border-color</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">2. Scale & highlight</div>
+          <p class="card-desc">
+            Slight zoom and glow to draw attention without being too aggressive.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-scale">
+            <span class="dot"></span>
+            Scale on hover
+          </button>
+        </div>
+        <p class="hint">Transition: <code>transform, box-shadow</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">3. Soft shadow lift</div>
+          <p class="card-desc">
+            Elevated effect for call-to-action buttons on dark backgrounds.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-soft-shadow">
+            <span class="dot"></span>
+            Lift up
+          </button>
+        </div>
+        <p class="hint">Transition: <code>transform, box-shadow, background</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">4. Morphing pill</div>
+          <p class="card-desc">
+            Changes shape, spacing and letter-spacing when hovered.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-morph">
+            <span class="dot"></span>
+            Shape morph
+          </button>
+        </div>
+        <p class="hint">Transition: <code>border-radius, padding, letter-spacing</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">5. Border glow</div>
+          <p class="card-desc">
+            Neon-like glow for “primary” actions on dark UI.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-glow">
+            <span class="dot"></span>
+            Glow ring
+          </button>
+        </div>
+        <p class="hint">Transition: <code>box-shadow, border-color, background</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">6. Slide underline</div>
+          <p class="card-desc">
+            Underline slides in from the side, good for text-like buttons.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-slide">
+            <span class="dot"></span>
+            Slide underline
+          </button>
+        </div>
+        <p class="hint">Transition: <code>pseudo-element transform</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">7. Rotate & color swap</div>
+          <p class="card-desc">
+            Slight tilt plus bright color, ideal for standout CTAs.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-rotate">
+            <span class="dot"></span>
+            Tilt & swap
+          </button>
+        </div>
+        <p class="hint">Transition: <code>transform, background, box-shadow</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">8. Animated gradient sweep</div>
+          <p class="card-desc">
+            Moving gradient gives a premium / futuristic look.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-gradient">
+            <span class="dot"></span>
+            Gradient sweep
+          </button>
+        </div>
+        <p class="hint">Transition: <code>background-position, box-shadow</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">9. Delayed / staged effect</div>
+          <p class="card-desc">
+            Color changes first, then the movement kicks in with a delay.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-delayed">
+            <span class="dot"></span>
+            Staged hover
+          </button>
+        </div>
+        <p class="hint">Transition: <code>delays per property</code></p>
+      </article>
+
+      <article class="card">
+        <div>
+          <div class="card-title">10. Press / click feedback</div>
+          <p class="card-desc">
+            Strong pressed-in effect on click to show clear interaction.
+          </p>
+        </div>
+        <div class="button-wrap">
+          <button class="demo-btn btn-press">
+            <span class="dot"></span>
+            Press me
+          </button>
+        </div>
+        <p class="hint">Transition: <code>transform, box-shadow on :active</code></p>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="legend">
+        <span class="legend-item">
+          <span class="legend-swatch"></span>
+          Hover = see transition
+        </span>
+        <span class="legend-item">
+          <span class="legend-swatch" style="background:#22c55e;"></span>
+          Click “Press me” to see active state
+        </span>
+      </div>
+      <div>
+        Tip: duplicate a card and tweak its CSS to create a custom preset for a customer.
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
