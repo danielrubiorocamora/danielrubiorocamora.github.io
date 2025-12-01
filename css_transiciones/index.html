@@ -2,10 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Responsive Grid Layout Example</title>
+  <title>Responsive Grid Layout with Theme Toggle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      /* Default = light theme */
+      --color-bg: #f3f4f6;
+      --color-text: #111827;
+      --color-header-bg: #1f2933;
+      --color-header-text: #ffffff;
+      --color-card-bg: #ffffff;
+      --color-card-shadow: rgba(0, 0, 0, 0.08);
+      --color-footer-bg: #1f2933;
+      --color-footer-text: #ffffff;
+      --color-link: #2563eb;
+      --color-label-bg: #4b5563;
+      --color-label-text: #ffffff;
+      --color-button-bg: #374151;
+      --color-button-text: #f9fafb;
+      --color-button-bg-hover: #111827;
+      --color-border: rgba(0, 0, 0, 0.08);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,8 +33,8 @@
 
     body {
       font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #333;
+      background: var(--color-bg);
+      color: var(--color-text);
     }
 
     /* Grid container */
@@ -34,22 +53,54 @@
 
     header {
       grid-area: header;
-      background: #1f2933;
-      color: #ffffff;
+      background: var(--color-header-bg);
+      color: var(--color-header-text);
       padding: 15px 20px;
       border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
     }
 
     header h1 {
       font-size: 1.4rem;
     }
 
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .theme-toggle-btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--color-border);
+      background: var(--color-button-bg);
+      color: var(--color-button-text);
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--color-button-bg-hover);
+      transform: translateY(-1px);
+    }
+
     nav {
       grid-area: sidebar;
-      background: #ffffff;
+      background: var(--color-card-bg);
       border-radius: 6px;
       padding: 15px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 0 5px var(--color-card-shadow);
     }
 
     nav h2 {
@@ -67,15 +118,15 @@
 
     nav a {
       text-decoration: none;
-      color: #2563eb;
+      color: var(--color-link);
     }
 
     main {
       grid-area: main;
-      background: #ffffff;
+      background: var(--color-card-bg);
       border-radius: 6px;
       padding: 15px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 0 5px var(--color-card-shadow);
     }
 
     main h2 {
@@ -89,8 +140,8 @@
 
     footer {
       grid-area: footer;
-      background: #1f2933;
-      color: #ffffff;
+      background: var(--color-footer-bg);
+      color: var(--color-footer-text);
       text-align: center;
       padding: 10px;
       border-radius: 6px;
@@ -102,8 +153,8 @@
       position: fixed;
       top: 10px;
       right: 10px;
-      background: #4b5563;
-      color: #ffffff;
+      background: var(--color-label-bg);
+      color: var(--color-label-text);
       padding: 5px 10px;
       border-radius: 4px;
       font-size: 0.85rem;
@@ -123,8 +174,13 @@
         grid-template-rows: auto auto 1fr auto;
       }
 
-      nav {
-        order: 1; /* logically appears after header, before main */
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .theme-toggle-btn {
+        align-self: flex-end;
       }
     }
   </style>
@@ -135,8 +191,11 @@
 
   <div class="layout">
     <header>
-      <h1>Responsive CSS Grid Layout</h1>
-      <p>Resize the window to see the layout adapt.</p>
+      <div class="header-left">
+        <h1>Responsive CSS Grid Layout</h1>
+        <p>Resize the window and toggle themes (Day/Night).</p>
+      </div>
+      <button id="themeToggle" class="theme-toggle-btn">Switch to Night Theme 🌙</button>
     </header>
 
     <nav>
@@ -152,22 +211,25 @@
     <main>
       <h2>Main Content</h2>
       <p>
-        This is the main content area. On large screens, it appears to the right
-        of the sidebar. On small screens (under 750px), the sidebar moves above
-        this content and everything stacks vertically for better visibility.
+        This is the main content area. On large screens, it appears to the
+        right of the sidebar. On small screens (under 750px), the sidebar moves
+        above this content and everything stacks vertically for better
+        visibility.
       </p>
       <p>
-        Try rotating your device or changing the browser width to see the grid
-        reorganize itself.
+        Use the button in the header to switch between a light (day) theme and
+        a dark (night) theme so you don’t get blinded when opening this page at
+        night.
       </p>
     </main>
 
     <footer>
-      © 2025 Responsive Grid Example
+      © 2025 Responsive Grid Example – Day/Night Theme
     </footer>
   </div>
 
   <script>
+    // Viewport width label
     function updateViewportWidth() {
       var label = document.getElementById("viewportWidth");
       if (label) {
@@ -177,6 +239,71 @@
 
     window.addEventListener("load", updateViewportWidth);
     window.addEventListener("resize", updateViewportWidth);
+
+    // Theme toggle using CSS variables
+    const root = document.documentElement;
+    const themeToggleBtn = document.getElementById("themeToggle");
+
+    const lightTheme = {
+      "--color-bg": "#f3f4f6",
+      "--color-text": "#111827",
+      "--color-header-bg": "#1f2933",
+      "--color-header-text": "#ffffff",
+      "--color-card-bg": "#ffffff",
+      "--color-card-shadow": "rgba(0, 0, 0, 0.08)",
+      "--color-footer-bg": "#1f2933",
+      "--color-footer-text": "#ffffff",
+      "--color-link": "#2563eb",
+      "--color-label-bg": "#4b5563",
+      "--color-label-text": "#ffffff",
+      "--color-button-bg": "#374151",
+      "--color-button-text": "#f9fafb",
+      "--color-button-bg-hover": "#111827",
+      "--color-border": "rgba(0, 0, 0, 0.08)"
+    };
+
+    const darkTheme = {
+      "--color-bg": "#020617",
+      "--color-text": "#e5e7eb",
+      "--color-header-bg": "#020617",
+      "--color-header-text": "#f9fafb",
+      "--color-card-bg": "#020617",
+      "--color-card-shadow": "rgba(15, 23, 42, 0.8)",
+      "--color-footer-bg": "#020617",
+      "--color-footer-text": "#e5e7eb",
+      "--color-link": "#60a5fa",
+      "--color-label-bg": "#111827",
+      "--color-label-text": "#e5e7eb",
+      "--color-button-bg": "#0f172a",
+      "--color-button-text": "#e5e7eb",
+      "--color-button-bg-hover": "#1f2937",
+      "--color-border": "rgba(148, 163, 184, 0.6)"
+    };
+
+    let isDark = false;
+
+    function applyTheme(theme) {
+      Object.keys(theme).forEach(key => {
+        root.style.setProperty(key, theme[key]);
+      });
+    }
+
+    function toggleTheme() {
+      if (isDark) {
+        applyTheme(lightTheme);
+        themeToggleBtn.textContent = "Switch to Night Theme 🌙";
+        isDark = false;
+      } else {
+        applyTheme(darkTheme);
+        themeToggleBtn.textContent = "Switch to Day Theme ☀️";
+        isDark = true;
+      }
+    }
+
+    // Initial theme (light), but you could auto-detect prefers-color-scheme here if you want
+    applyTheme(lightTheme);
+
+    themeToggleBtn.addEventListener("click", toggleTheme);
   </script>
 </body>
 </html>
