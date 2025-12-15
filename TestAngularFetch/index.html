@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" ng-app="rssApp">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AngularJS RSS Random Article (Click Fetch)</title>
+
+  <!-- AngularJS (no npm) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <!-- For ng-bind-html -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-sanitize.min.js"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .screen {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      user-select: none;
+      cursor: pointer;
+      background: #fafafa;
+    }
+    .card {
+      width: min(900px, 100%);
+      background: #fff;
+      border: 1px solid #e9e9e9;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      cursor: inherit;
+    }
+    .title { font-size: 22px; font-weight: 750; margin: 0 0 8px 0; }
+    .meta { opacity: .75; font-size: 14px; margin-bottom: 14px; }
+    .pill { display: inline-block; border: 1px solid #eee; border-radius: 999px; padding: 4px 10px; font-size: 12px; opacity: .8; }
+    a { color: inherit; }
+    .desc { margin-top: 12px; line-height: 1.45; opacity: .92; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top: 14px; }
+    button {
+      border: 1px solid #ddd; background: #fff;
+      padding: 10px 14px; border-radius: 12px;
+      font-size: 14px; cursor: pointer;
+    }
+    button:hover { background: #f6f6f6; }
+    .status { font-size: 14px; opacity: .8; }
+    .error { color: #b00020; opacity: 1; }
+    .small { font-size: 12px; opacity: .7; margin-top: 10px; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; border:1px solid #eee; border-bottom-width:2px; padding:1px 6px; border-radius:6px; background:#fafafa; }
+  </style>
+</head>
+
+<body ng-controller="MainCtrl as vm">
+  <!-- Click anywhere triggers fetch + click counter -->
+  <div class="screen" ng-click="vm.onScreenClick($event)">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <span class="pill">Click anywhere to fetch a random RSS article</span>
+        <span class="pill">Clicks: <strong>{{ vm.clicks }}</strong></span>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button type="button" ng-click="vm.fetchRandom($event)">Fetch random article</button>
+        <button type="button" ng-click="vm.nextFeed($event)">Switch feed (manual)</button>
+        <span class="status" ng-class="{error: vm.error}">
+          <span ng-if="vm.loading">Loading…</span>
+          <span ng-if="!vm.loading && !vm.error">Ready</span>
+          <span ng-if="vm.error">{{ vm.error }}</span>
+        </span>
+      </div>
+
+      <div class="meta" style="margin-top:10px;">
+        Current feed: <span class="kbd">{{ vm.currentFeed }}</span>
+      </div>
+
+      <div ng-if="vm.article">
+        <h1 class="title">
+          <a ng-href="{{ vm.article.link }}" target="_blank" rel="noopener">{{ vm.article.title }}</a>
+        </h1>
+        <div class="meta">
+          <span ng-if="vm.article.pubDate">Published: {{ vm.article.pubDate }}</span>
+          <span ng-if="vm.article.pubDate"> · </span>
+          Source: {{ vm.article.source }}
+        </div>
+
+        <div class="desc" ng-if="vm.article.description" ng-bind-html="vm.article.description"></div>
+
+        <div class="small">
+          Tip: If a feed is temporarily down, click again — it will pick another feed/article.
+        </div>
+      </div>
+
+      <div ng-if="!vm.article && !vm.loading" class="small">
+        No article loaded yet. Click anywhere (or the button) to fetch one.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      angular.module("rssApp", ["ngSanitize"])
+        .controller("MainCtrl", ["$scope", "$sce", function ($scope, $sce) {
+          var vm = this;
+
+          // A few public RSS feeds (you can add more)
+          vm.feeds = [
+            { name: "BBC World", url: "http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/world/rss.xml" },
+            { name: "BBC Technology", url: "http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/technology/rss.xml" },
+            { name: "BBC Business", url: "http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/business/rss.xml" }
+          ];
+
+          vm.clicks = 0;
+          vm.loading = false;
+          vm.error = "";
+          vm.article = null;
+
+          vm.currentFeedIndex = 0;
+          vm.currentFeed = vm.feeds[vm.currentFeedIndex].url;
+
+          vm.onScreenClick = function () {
+            vm.clicks += 1;
+            vm.fetchRandom();
+          };
+
+          vm.nextFeed = function ($event) {
+            if ($event && $event.stopPropagation) $event.stopPropagation(); // prevent double-trigger
+            vm.currentFeedIndex = (vm.currentFeedIndex + 1) % vm.feeds.length;
+            vm.currentFeed = vm.feeds[vm.currentFeedIndex].url;
+          };
+
+          vm.fetchRandom = function ($event) {
+            if ($event && $event.stopPropagation) $event.stopPropagation(); // IMPORTANT: avoid bubbling to screen
+            vm.loading = true;
+            vm.error = "";
+
+            // pick a random feed (or keep current—your choice)
+            var feed = vm.feeds[Math.floor(Math.random() * vm.feeds.length)];
+            vm.currentFeed = feed.url;
+
+            var proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(feed.url);
+
+            fetch(proxyUrl)
+              .then(function (r) {
+                if (!r.ok) throw new Error("HTTP " + r.status);
+                return r.text();
+              })
+              .then(function (xmlText) {
+                var doc = new DOMParser().parseFromString(xmlText, "text/xml");
+
+                // Basic RSS 2.0: <item>...</item>
+                var items = Array.from(doc.getElementsByTagName("item"));
+                if (!items.length) {
+                  // Some feeds use Atom <entry>...; try that too
+                  items = Array.from(doc.getElementsByTagName("entry"));
+                }
+                if (!items.length) throw new Error("No items found in feed.");
+
+                var picked = items[Math.floor(Math.random() * items.length)];
+
+                function textOf(tagNames) {
+                  for (var i = 0; i < tagNames.length; i++) {
+                    var el = picked.getElementsByTagName(tagNames[i])[0];
+                    if (el && el.textContent) return el.textContent.trim();
+                  }
+                  return "";
+                }
+
+                var title = textOf(["title"]);
+                var link = textOf(["link"]);
+                // Atom <link href="...">
+                if (!link) {
+                  var linkEl = picked.getElementsByTagName("link")[0];
+                  if (linkEl && linkEl.getAttribute) link = linkEl.getAttribute("href") || "";
+                }
+
+                var pubDate = textOf(["pubDate", "published", "updated"]);
+                var desc = textOf(["description", "summary", "content"]);
+
+                // Allow limited HTML rendering (comes from RSS; treat as untrusted in real apps)
+                var safeDesc = desc ? $sce.trustAsHtml(desc) : "";
+
+                vm.article = {
+                  title: title || "(no title)",
+                  link: link || "#",
+                  pubDate: pubDate || "",
+                  description: safeDesc,
+                  source: feed.name
+                };
+
+                vm.loading = false;
+                $scope.$applyAsync();
+              })
+              .catch(function (err) {
+                vm.loading = false;
+                vm.error = "Fetch failed: " + (err && err.message ? err.message : String(err));
+                $scope.$applyAsync();
+              });
+          };
+        }]);
+    })();
+  </script>
+</body>
+</html>
