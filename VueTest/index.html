@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vue Tennis Counter</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #0b1020;
+      color: #e9eefc;
+    }
+    .wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .app { width: min(980px, 100%); }
+
+    h1 { margin: 0; font-size: 22px; }
+    .sub { font-size: 13px; opacity: .8; margin-top: 4px; }
+
+    .top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .btnrow { display: flex; gap: 8px; }
+
+    button {
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.06);
+      color: inherit;
+      padding: 10px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: rgba(255,255,255,.1); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .danger { background: rgba(255,80,80,.14); border-color: rgba(255,80,80,.25); }
+
+    .banner {
+      border: 1px dashed rgba(255,255,255,.22);
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 22px;
+      padding: 14px;
+    }
+    .cardhead { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .title { font-size: 16px; font-weight: 700; }
+    .muted { font-size: 12px; opacity: .75; }
+
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+    .stat {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(0,0,0,.12);
+    }
+    .stat .label { font-size: 12px; opacity: .75; }
+    .stat .val { font-size: 32px; font-weight: 800; }
+
+    .actions { display: flex; gap: 10px; }
+    .actions button { flex: 1; }
+
+    ul { margin: 6px 0 0; padding-left: 18px; font-size: 12px; opacity: .8; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="app" class="app"></div>
+  </div>
+
+  <!-- Vue 3 (no npm) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, reactive, computed } = Vue;
+
+    const POINTS = [0, 15, 30, 40];
+
+    createApp({
+      setup() {
+        const state = reactive({
+          points: [0, 0],
+          adv: [false, false],
+          sets: [0, 0],
+          history: []
+        });
+
+        const deuce = computed(() =>
+          state.points[0] === 3 &&
+          state.points[1] === 3 &&
+          !state.adv[0] &&
+          !state.adv[1]
+        );
+
+        function clone(s) {
+          return JSON.parse(JSON.stringify(s));
+        }
+
+        function other(p) {
+          return p === 0 ? 1 : 0;
+        }
+
+        function pointLabel(p) {
+          if (deuce.value) return "DEUCE";
+          if (state.adv[p]) return "AD";
+          return POINTS[state.points[p]];
+        }
+
+        function addPoint(p) {
+          state.history.push(clone(state));
+          const o = other(p);
+
+          if (state.adv[o]) {
+            state.adv[o] = false;
+            return;
+          }
+
+          if (state.adv[p]) {
+            state.sets[p]++;
+            state.points = [0, 0];
+            state.adv = [false, false];
+            return;
+          }
+
+          if (state.points[p] === 3 && state.points[o] === 3) {
+            state.adv[p] = true;
+            return;
+          }
+
+          if (state.points[p] < 3) {
+            state.points[p]++;
+            return;
+          }
+
+          if (state.points[p] === 3 && state.points[o] < 3) {
+            state.sets[p]++;
+            state.points = [0, 0];
+            state.adv = [false, false];
+          }
+        }
+
+        function undo() {
+          if (!state.history.length) return;
+          const prev = state.history.pop();
+          Object.assign(state, prev);
+        }
+
+        function reset() {
+          state.points = [0, 0];
+          state.adv = [false, false];
+          state.sets = [0, 0];
+          state.history = [];
+        }
+
+        return {
+          state,
+          deuce,
+          pointLabel,
+          addPoint,
+          undo,
+          reset
+        };
+      },
+
+      template: `
+        <div>
+          <div class="top">
+            <div>
+              <h1>Vue Tennis Counter</h1>
+              <div class="sub">0–15–30–40 → AD → win = +1 Set</div>
+            </div>
+            <div class="btnrow">
+              <button @click="undo" :disabled="!state.history.length">Undo</button>
+              <button class="danger" @click="reset">Reset</button>
+            </div>
+          </div>
+
+          <div v-if="deuce" class="banner">
+            <div class="muted">Current state</div>
+            <div style="font-size:22px;font-weight:800">DEUCE</div>
+          </div>
+
+          <div class="grid">
+            <div class="card" v-for="i in [0,1]" :key="i">
+              <div class="cardhead">
+                <div class="title">Team {{ i === 0 ? 'A' : 'B' }}</div>
+                <div class="muted">Team {{ i + 1 }}</div>
+              </div>
+
+              <div class="stats">
+                <div class="stat">
+                  <div class="label">Set</div>
+                  <div class="val">{{ state.sets[i] }}</div>
+                </div>
+                <div class="stat">
+                  <div class="label">Point</div>
+                  <div class="val">{{ pointLabel(i) }}</div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button @click="addPoint(i)">+ Point</button>
+                <button @click="undo" :disabled="!state.history.length">- (Undo)</button>
+              </div>
+
+              <ul>
+                <li>0 → 15 → 30 → 40</li>
+                <li>40–40 gives AD</li>
+                <li>Win with AD = +1 Set</li>
+                <li>Opponent AD + win = Deuce</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `
+    }).mount("#app");
+  </script>
+</body>
+</html>
