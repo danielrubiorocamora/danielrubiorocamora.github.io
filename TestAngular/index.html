@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Angular Stopwatch + Click Counter</title>
+
+  <!-- AngularJS (no npm needed) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .screen {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      user-select: none;
+      cursor: pointer;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      max-width: 720px;
+      width: 100%;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
+    .time { font-size: 54px; font-weight: 700; letter-spacing: .5px; }
+    .meta { margin-top: 12px; font-size: 18px; opacity: .85; }
+    .hint { margin-top: 16px; font-size: 14px; opacity: .7; line-height: 1.4; }
+    .row { display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+    button {
+      border: 1px solid #ddd; background: #fff;
+      padding: 10px 14px; border-radius: 12px;
+      font-size: 14px; cursor: pointer;
+    }
+    button:hover { background: #fafafa; }
+    .pill { display:inline-block; padding: 4px 10px; border:1px solid #eee; border-radius:999px; font-size: 12px; opacity:.8; }
+  </style>
+</head>
+
+<body ng-controller="MainCtrl as vm">
+  <!-- Full-screen clickable area -->
+  <div class="screen" ng-click="vm.onScreenClick($event)">
+    <div class="card">
+      <div class="pill">Click anywhere to start (and count clicks)</div>
+
+      <div class="time" aria-label="elapsed time">{{ vm.formatted }}</div>
+
+      <div class="meta">
+        Clicks: <strong>{{ vm.clicks }}</strong>
+        &nbsp;•&nbsp;
+        Running: <strong>{{ vm.running ? 'Yes' : 'No' }}</strong>
+      </div>
+
+      <div class="hint">
+        The stopwatch starts on your first click, then keeps running.<br />
+        Every click on the screen increments the counter.
+      </div>
+
+      <div class="row">
+        <button type="button" ng-click="vm.pause($event)">{{ vm.running ? 'Pause' : 'Resume' }}</button>
+        <button type="button" ng-click="vm.reset($event)">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      angular.module("app", [])
+        .controller("MainCtrl", ["$interval", function ($interval) {
+          var vm = this;
+
+          vm.running = false;
+          vm.clicks = 0;
+
+          var startMs = 0;     // timestamp when started/resumed
+          var accMs = 0;       // accumulated elapsed ms when paused
+          var tickHandle = null;
+
+          vm.formatted = format(0);
+
+          vm.onScreenClick = function () {
+            vm.clicks += 1;
+            if (!vm.running) {
+              start();
+            }
+          };
+
+          vm.pause = function ($event) {
+            // prevent button click from also counting as a screen click
+            if ($event && $event.stopPropagation) $event.stopPropagation();
+
+            if (vm.running) stop();
+            else start(true);
+          };
+
+          vm.reset = function ($event) {
+            if ($event && $event.stopPropagation) $event.stopPropagation();
+            stop(true);
+            vm.clicks = 0;
+            accMs = 0;
+            vm.formatted = format(0);
+          };
+
+          function start(isResume) {
+            vm.running = true;
+            startMs = Date.now();
+            if (!isResume) accMs = accMs; // keep as-is
+            if (tickHandle) $interval.cancel(tickHandle);
+
+            tickHandle = $interval(function () {
+              var now = Date.now();
+              var elapsed = accMs + (now - startMs);
+              vm.formatted = format(elapsed);
+            }, 25);
+          }
+
+          function stop(keepElapsed) {
+            if (!vm.running && !keepElapsed) return;
+            if (vm.running) {
+              accMs += (Date.now() - startMs);
+            }
+            vm.running = false;
+            if (tickHandle) {
+              $interval.cancel(tickHandle);
+              tickHandle = null;
+            }
+            if (!keepElapsed) {
+              accMs = 0;
+              vm.formatted = format(0);
+            } else {
+              vm.formatted = format(accMs);
+            }
+          }
+
+          function pad2(n) { return (n < 10 ? "0" : "") + n; }
+          function pad3(n) {
+            if (n < 10) return "00" + n;
+            if (n < 100) return "0" + n;
+            return "" + n;
+          }
+
+          function format(ms) {
+            var minutes = Math.floor(ms / 60000);
+            var seconds = Math.floor((ms % 60000) / 1000);
+            var millis  = Math.floor(ms % 1000);
+            return pad2(minutes) + ":" + pad2(seconds) + "." + pad3(millis);
+          }
+        }]);
+    })();
+  </script>
+</body>
+</html>
