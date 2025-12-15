@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tennis Counter</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0b1020; color:#e9eefc; }
+      .wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+      .app { width: min(980px, 100%); }
+      .top { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; margin-bottom:14px; }
+      h1 { margin:0; font-size:22px; }
+      .sub { margin:4px 0 0; font-size:13px; opacity:.8; }
+      .btnrow { display:flex; gap:8px; }
+      button {
+        border: 1px solid rgba(255,255,255,.15);
+        background: rgba(255,255,255,.06);
+        color: inherit;
+        padding: 10px 14px;
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      button:hover { background: rgba(255,255,255,.10); }
+      button:disabled { opacity: .45; cursor: not-allowed; }
+      .danger { background: rgba(255,80,80,.14); border-color: rgba(255,80,80,.25); }
+      .danger:hover { background: rgba(255,80,80,.20); }
+
+      .banner {
+        border: 1px dashed rgba(255,255,255,.22);
+        background: rgba(255,255,255,.05);
+        border-radius: 18px;
+        padding: 12px;
+        text-align:center;
+        margin-bottom: 14px;
+      }
+
+      .grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+      @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+      .card {
+        border: 1px solid rgba(255,255,255,.12);
+        background: rgba(255,255,255,.05);
+        border-radius: 22px;
+        padding: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      }
+      .cardhead { display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
+      .title { font-size: 16px; font-weight: 700; }
+      .muted { opacity: .75; font-size: 12px; }
+
+      .stats { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+      .stat {
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 18px;
+        padding: 12px;
+        background: rgba(0,0,0,.12);
+      }
+      .stat .label { font-size: 12px; opacity: .75; }
+      .stat .val { font-size: 32px; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+      .actions { display:flex; gap: 10px; }
+      .actions button { flex:1; }
+
+      .rules { margin-top: 12px; font-size: 12px; opacity: .8; line-height: 1.45; }
+      ul { margin: 6px 0 0; padding-left: 18px; }
+      li { margin: 4px 0; }
+
+      .foot { margin-top: 14px; font-size: 12px; opacity: .7; }
+      code { background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="app">
+        <div id="root"></div>
+      </div>
+    </div>
+
+    <!-- React + ReactDOM (no npm) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel to run JSX in the browser (no build step) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- "index.jsx" in one file: -->
+    <script type="text/babel">
+      const POINTS = [0, 15, 30, 40];
+
+      function initialState() {
+        return {
+          points: [0, 0],   // 0..3 => 0/15/30/40
+          adv: [false, false],
+          sets: [0, 0],     // your casual “set/game” counter
+        };
+      }
+
+      function other(p) { return p === 0 ? 1 : 0; }
+
+      function pointsLabel(s, p) {
+        const bothAt40 = s.points[0] === 3 && s.points[1] === 3;
+        if (bothAt40 && !s.adv[0] && !s.adv[1]) return "DEUCE";
+        if (s.adv[p]) return "AD";
+        return String(POINTS[s.points[p]]);
+      }
+
+      // Rule requested:
+      // - reach 40
+      // - gain advantage
+      // - win again => +1 set (and reset points)
+      function addPoint(state, p) {
+        const s = JSON.parse(JSON.stringify(state));
+        const o = other(p);
+
+        // If opponent had advantage, remove it (back to deuce)
+        if (s.adv[o]) {
+          s.adv[o] = false;
+          return s;
+        }
+
+        // If player already has advantage, they win the "set"
+        if (s.adv[p]) {
+          s.sets[p] += 1;
+          s.points = [0, 0];
+          s.adv = [false, false];
+          return s;
+        }
+
+        // If both at 40 (deuce), winning grants advantage
+        if (s.points[p] === 3 && s.points[o] === 3) {
+          s.adv[p] = true;
+          return s;
+        }
+
+        // Normal point progression
+        if (s.points[p] < 3) {
+          s.points[p] += 1;
+          return s;
+        }
+
+        // At 40 vs opponent below 40: win => +1 set, reset
+        if (s.points[p] === 3 && s.points[o] < 3) {
+          s.sets[p] += 1;
+          s.points = [0, 0];
+          s.adv = [false, false];
+          return s;
+        }
+
+        return s;
+      }
+
+      function App() {
+        const [state, setState] = React.useState(() => initialState());
+        const [history, setHistory] = React.useState([]);
+
+        const deuce = state.points[0] === 3 && state.points[1] === 3 && !state.adv[0] && !state.adv[1];
+
+        function commit(next) {
+          setHistory(h => [...h, state]);
+          setState(next);
+        }
+
+        function plus(p) { commit(addPoint(state, p)); }
+
+        function undo() {
+          setHistory(h => {
+            if (h.length === 0) return h;
+            const prev = h[h.length - 1];
+            setState(prev);
+            return h.slice(0, -1);
+          });
+        }
+
+        function reset() {
+          setHistory([]);
+          setState(initialState());
+        }
+
+        const teams = [
+          { name: "Team A", idx: 0 },
+          { name: "Team B", idx: 1 },
+        ];
+
+        return (
+          <div>
+            <div className="top">
+              <div>
+                <h1>Tennis Counter</h1>
+                <div className="sub">
+                  Points: 0–15–30–40 → AD. Win from AD adds <b>+1 Set</b> and resets points.
+                </div>
+              </div>
+              <div className="btnrow">
+                <button onClick={undo} disabled={history.length === 0}>Undo</button>
+                <button className="danger" onClick={reset}>Reset</button>
+              </div>
+            </div>
+
+            {deuce && (
+              <div className="banner">
+                <div className="muted">Current state</div>
+                <div style={{ fontSize: 22, fontWeight: 800 }}>DEUCE</div>
+              </div>
+            )}
+
+            <div className="grid">
+              {teams.map(t => (
+                <div className="card" key={t.idx}>
+                  <div className="cardhead">
+                    <div className="title">{t.name}</div>
+                    <div className="muted">Team {t.idx + 1}</div>
+                  </div>
+
+                  <div className="stats">
+                    <div className="stat">
+                      <div className="label">Set</div>
+                      <div className="val">{state.sets[t.idx]}</div>
+                    </div>
+                    <div className="stat">
+                      <div className="label">Point</div>
+                      <div className="val">{pointsLabel(state, t.idx)}</div>
+                    </div>
+                  </div>
+
+                  <div className="actions">
+                    <button onClick={() => plus(t.idx)}>+ Point</button>
+                    <button onClick={undo} disabled={history.length === 0}>- (Undo)</button>
+                  </div>
+
+                  <div className="rules">
+                    Rules:
+                    <ul>
+                      <li>0 → 15 → 30 → 40</li>
+                      <li>At 40–40 you get <b>AD</b> on the next point</li>
+                      <li>If you have AD and win again: <b>+1 Set</b> and points reset</li>
+                      <li>If opponent has AD and you win: back to <b>DEUCE</b></li>
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="foot">
+              No npm needed. This file contains your “<code>index.jsx</code>” inline (via Babel).
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
