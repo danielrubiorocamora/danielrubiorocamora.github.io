@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eventos Culturales — Detail</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-page="detail">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar" role="banner">
+    <div class="topbar__inner">
+      <div class="brand">
+        <span class="brand__dot" aria-hidden="true"></span>
+        <span class="brand__text">Eventos Culturales</span>
+      </div>
+
+      <button id="navToggle" class="icon-btn topbar__burger" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">☰</button>
+
+      <nav id="primaryNav" class="nav" aria-label="Primary">
+        <a href="./index.html" class="nav__link">Home</a>
+        <a href="./events.html" class="nav__link">Events</a>
+        <a href="./mylist.html" class="nav__link">My List</a>
+        <button id="loginBtn" class="nav__link nav__link--btn" type="button">Login</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" role="main">
+    <button id="backBtn" class="linklike" type="button">← Back</button>
+
+    <div class="detail">
+      <div class="detail__media" role="img" aria-label="Event image placeholder">Image placeholder</div>
+
+      <aside class="detail__actions" aria-label="Event actions">
+        <button id="addToListBtn" class="btn btn--primary" type="button">Add to My List</button>
+        <button id="reserveBtn" class="btn btn--accent" type="button">Reserve / Register</button>
+
+        <div class="share card card--sub" aria-label="Share event">
+          <div class="card__header"><h3>Share</h3></div>
+          <div class="card__body share__buttons">
+            <button class="btn btn--share" data-share="copy" type="button">Copy link</button>
+            <button class="btn btn--share" data-share="twitter" type="button">X</button>
+            <button class="btn btn--share" data-share="facebook" type="button">Facebook</button>
+          </div>
+        </div>
+      </aside>
+
+      <article class="detail__info">
+        <h1 id="detailTitle"></h1>
+        <ul class="meta" id="detailMeta"></ul>
+        <p id="detailDesc"></p>
+
+        <section class="card card--sub" aria-labelledby="extraTitle">
+          <div class="card__header"><h2 id="extraTitle">Additional details</h2></div>
+          <div class="card__body"><ul class="bullets" id="detailExtra"></ul></div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <small>© <span id="year"></span> Eventos Culturales</small>
+  </footer>
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+    <div class="modal__backdrop" data-close="login"></div>
+    <div class="modal__panel" role="document">
+      <div class="modal__header">
+        <h2 id="loginTitle">Login</h2>
+        <button class="icon-btn" type="button" aria-label="Close login" data-close="login">✕</button>
+      </div>
+      <div class="modal__body">
+        <p class="muted">Choose a sign-in method:</p>
+        <div class="stack">
+          <button class="btn btn--provider" type="button" data-provider="microsoft">Continue with Microsoft Entra ID</button>
+          <button class="btn btn--provider" type="button" data-provider="google">Continue with Google</button>
+          <button class="btn btn--provider" type="button" data-provider="facebook">Continue with Facebook</button>
+        </div>
+
+        <div class="divider divider--tight" role="separator" aria-label="Or"></div>
+
+        <form id="loginForm" class="stack" novalidate>
+          <div class="field">
+            <label class="label" for="email">Email</label>
+            <input id="email" class="input" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label class="label" for="password">Password</label>
+            <input id="password" class="input" type="password" required minlength="6" autocomplete="current-password" />
+            <div class="help">Minimum 6 characters.</div>
+          </div>
+          <div class="alert" id="loginError" role="alert" hidden></div>
+          <button class="btn btn--primary" type="submit">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+    <div class="modal__backdrop" data-close="confirm"></div>
+    <div class="modal__panel modal__panel--center" role="document">
+      <div class="modal__body modal__body--center">
+        <div class="check" aria-hidden="true">✓</div>
+        <h2 id="confirmTitle">Reservation/Registration confirmed!</h2>
+        <p class="muted" id="confirmText">Your reservation is confirmed.</p>
+        <button id="goMyListBtn" class="btn btn--primary" type="button">Go to My List</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
