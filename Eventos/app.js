@@ -370,6 +370,11 @@ function initDetailPage(){
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
   const ev = eventsDb.find(e => e.id === id);
+  const img = document.getElementById("detailImage");
+  if (img) {
+    img.src = ev.image || FALLBACK_IMAGE;
+    img.alt = ev.title + " event image";
+  }
   if (!ev){
     window.location.href = "./events.html";
     return;
