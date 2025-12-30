@@ -433,6 +433,13 @@ h3{ font-size: 1rem; margin:0; }
   font-weight: 900;
   margin-bottom: 10px;
 }
+.map{
+  width: 100%;
+  min-height: 210px;   /* match your previous placeholder */
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
 
 /* Responsive */
 @media (max-width: 980px){
