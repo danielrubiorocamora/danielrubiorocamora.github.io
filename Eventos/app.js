@@ -1,5 +1,6 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel, root)];
+const FALLBACK_IMAGE = "./placeholder.png";
 const cityCoords = {
   Vigo: [42.2406, -8.7207],
   Madrid: [40.4168, -3.7038],
@@ -25,28 +26,28 @@ const state = {
 
 const eventsDb = [
   { id:"e1", title:"Summer Music Festival", date:"2025-06-15", city:"Vigo", venue:"Castrelos Park Arena", category:"Music", featured:true,  upcoming:true,
-    desc:"A full-day festival with local and international artists across multiple stages.",
+    image: "./e1.png", desc:"A full-day festival with local and international artists across multiple stages.",
     extra:["Outdoor event","All ages","Food trucks available"] },
   { id:"e2", title:"Tech Conference 2025", date:"2025-02-22", city:"Madrid", venue:"Convention Center", category:"Technology", featured:true, upcoming:true,
-    desc:"Talks and workshops on software, AI, security, and product design.",
+    image: "./e2.png", desc:"Talks and workshops on software, AI, security, and product design.",
     extra:["Workshops included","Networking","Badge required"] },
   { id:"e3", title:"Food & Wine Expo", date:"2025-03-10", city:"Barcelona", venue:"Harbor Exhibition Hall", category:"Gastronomy", featured:true, upcoming:false,
-    desc:"Regional producers, tastings, and live cooking shows all weekend.",
+    image: "./e3.png", desc:"Regional producers, tastings, and live cooking shows all weekend.",
     extra:["Tastings","Family-friendly","Indoor venue"] },
   { id:"e4", title:"Art Gallery Opening", date:"2025-01-17", city:"Vigo", venue:"Modern Art Museum", category:"Art", featured:false, upcoming:true,
-    desc:"New contemporary exhibit with guided tour and artist Q&A session.",
+    image: "./e4.png", desc:"New contemporary exhibit with guided tour and artist Q&A session.",
     extra:["Guided tour","Limited capacity","Wheelchair access"] },
   { id:"e5", title:"Theatre: Classic Play", date:"2025-02-05", city:"Valencia", venue:"Teatro Municipal", category:"Theatre", featured:false, upcoming:true,
-    desc:"A modern staging of a classic play with an award-winning cast.",
+    image: "./e5.png", desc:"A modern staging of a classic play with an award-winning cast.",
     extra:["Seated","Subtitles available","90 minutes"] },
   { id:"e6", title:"Jazz Night in the Park", date:"2025-12-05", city:"Vigo", venue:"Parque Central - Main Stage", category:"Music", featured:false, upcoming:false,
-    desc:"A magical evening under the stars with a live jazz ensemble.",
+    image: "./e6.png", desc:"A magical evening under the stars with a live jazz ensemble.",
     extra:["Free entry","Bring a blanket","Refreshments nearby"] },
   { id:"e7", title:"Book Fair Annual", date:"2025-05-18", city:"Sevilla", venue:"Centro de Convenciones", category:"Literature", featured:false, upcoming:true,
-    desc:"Stands from publishers and authors, readings, and book signings.",
+    image: "./e7.png", desc:"Stands from publishers and authors, readings, and book signings.",
     extra:["Talks","Kids area","Accessible venue"] },
   { id:"e8", title:"Folk Dance Festival", date:"2025-07-07", city:"Bilbao", venue:"Plaza Mayor", category:"Dance", featured:false, upcoming:false,
-    desc:"Traditional dance groups with live music and local crafts.",
+    image: "./e8.png", desc:"Traditional dance groups with live music and local crafts.",
     extra:["Outdoor","Free entry","Local market"] },
 ];
 
