@@ -1,6 +1,13 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel, root)];
-
+const cityCoords = {
+  Vigo: [42.2406, -8.7207],
+  Madrid: [40.4168, -3.7038],
+  Barcelona: [41.3851, 2.1734],
+  Valencia: [39.4699, -0.3763],
+  Sevilla: [37.3891, -5.9845],
+  Bilbao: [43.2630, -2.9350],
+};
 const LS_KEYS = {
   session: "ec_session",
   city: "ec_city",
@@ -45,6 +52,8 @@ const eventsDb = [
 
 const categories = [...new Set(eventsDb.map(e => e.category))].sort();
 const cities = [...new Set(eventsDb.map(e => e.city))].sort();
+let mapInstance = null;
+let mapMarker = null;
 
 /* ---------- Storage ---------- */
 function loadFromStorage(){
@@ -273,12 +282,16 @@ function initHome(){
     citySelect.value = state.city;
 
     citySelect.addEventListener("change", () => {
+      const c = citySelect.value;
+      if (c && cityCoords[c]) {
+        setMapTo(cityCoords[c][0], cityCoords[c][1], c);
+      }
       state.city = citySelect.value;
       saveToStorage();
       toast(state.city ? `Location set to: ${state.city}` : "Location cleared");
     });
   }
-
+  initLeafletMap();
   const gpsBtn = $("#useGpsBtn");
   if (gpsBtn){
     gpsBtn.addEventListener("click", () => {
@@ -287,16 +300,18 @@ function initHome(){
         return;
       }
       navigator.geolocation.getCurrentPosition(
-        () => {
-          state.city = state.city || "Vigo"; // demo fallback (no reverse geocode)
-          saveToStorage();
-          if (citySelect) citySelect.value = state.city;
-          toast(`Location set to: ${state.city}`);
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          // Save coords if you want; for now just show map
+          setMapTo(latitude, longitude, "You are here");
+          toast("Map centered on your current location.");
         },
         () => toast("Could not access location. Please choose a city manually.")
       );
     });
+    
   }
+  
 }
 
 function initEventsPage(){
@@ -510,6 +525,40 @@ function initMyListPage(){
   $("#tabReserved")?.addEventListener("click", () => setTab("reserved"));
   $("#tabSaved")?.addEventListener("click", () => setTab("saved"));
   setTab("reserved");
+}
+
+/* ---------- Map management ---------- */
+function initLeafletMap() {
+  const mapEl = document.getElementById("map");
+  if (!mapEl || typeof L === "undefined") return;
+
+  // Avoid double init if user reloads / hot-reloads
+  if (mapInstance) return;
+
+  // Default center (Vigo)
+  const defaultLatLng = [42.2406, -8.7207];
+
+  mapInstance = L.map("map", { scrollWheelZoom: false }).setView(defaultLatLng, 12);
+
+  // Free OSM tiles
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(mapInstance);
+
+  mapMarker = L.marker(defaultLatLng).addTo(mapInstance).bindPopup("Default: Vigo").openPopup();
+}
+
+function setMapTo(lat, lng, label = "Selected location") {
+  if (!mapInstance) return;
+  const ll = [lat, lng];
+  mapInstance.setView(ll, 13);
+  if (!mapMarker) {
+    mapMarker = L.marker(ll).addTo(mapInstance);
+  } else {
+    mapMarker.setLatLng(ll);
+  }
+  mapMarker.bindPopup(label).openPopup();
 }
 
 /* ---------- Boot ---------- */
