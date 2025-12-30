@@ -3,237 +3,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Eventos Culturales</title>
-  <meta name="description" content="Discover nearby cultural events: concerts, theatre, exhibitions. Filter, save, and reserve." />
+  <title>Eventos Culturales — Home</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
-
-<body>
+<body data-page="home">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="topbar" role="banner">
     <div class="topbar__inner">
-      <div class="brand" aria-label="Events app brand">
+      <div class="brand">
         <span class="brand__dot" aria-hidden="true"></span>
         <span class="brand__text">Eventos Culturales</span>
       </div>
 
-      <button id="navToggle" class="icon-btn topbar__burger" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">
-        ☰
-      </button>
+      <button id="navToggle" class="icon-btn topbar__burger" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">☰</button>
 
       <nav id="primaryNav" class="nav" aria-label="Primary">
-        <a href="#home" data-route="home" class="nav__link">Home</a>
-        <a href="#events" data-route="events" class="nav__link">Events</a>
-        <a href="#mylist" data-route="mylist" class="nav__link">My List</a>
+        <a href="./index.html" class="nav__link">Home</a>
+        <a href="./events.html" class="nav__link">Events</a>
+        <a href="./mylist.html" class="nav__link">My List</a>
         <button id="loginBtn" class="nav__link nav__link--btn" type="button">Login</button>
       </nav>
     </div>
   </header>
 
   <main id="main" class="container" role="main">
-    <!-- HOME -->
-    <section id="view-home" class="view" aria-labelledby="homeTitle">
-      <h1 id="homeTitle">Discover cultural events near you</h1>
+    <h1>Discover cultural events near you</h1>
 
-      <div class="grid">
-        <section class="card card--panel" aria-labelledby="featuredTitle">
-          <div class="card__header">
-            <h2 id="featuredTitle">Featured Events</h2>
-          </div>
-          <div class="card__body">
-            <div id="featuredGrid" class="cards"></div>
-          </div>
-        </section>
-
-        <section class="card card--panel" aria-labelledby="upcomingTitle">
-          <div class="card__header">
-            <h2 id="upcomingTitle">Upcoming Events</h2>
-          </div>
-          <div class="card__body">
-            <div id="upcomingGrid" class="cards"></div>
-          </div>
-        </section>
-
-        <section class="card card--panel" aria-labelledby="locationTitle">
-          <div class="card__header">
-            <h2 id="locationTitle">Select Location</h2>
-          </div>
-
-          <div class="card__body location">
-            <div class="map-placeholder" aria-label="Map placeholder" role="img">
-              Map (placeholder)
-            </div>
-
-            <div class="location__controls">
-              <button id="useGpsBtn" class="btn btn--primary" type="button">
-                Use my current location (GPS)
-              </button>
-
-              <div class="divider" role="separator" aria-label="Or"></div>
-
-              <label class="label" for="citySelect">Or choose a city</label>
-              <select id="citySelect" class="input">
-                <option value="">Select city</option>
-              </select>
-
-              <p class="hint" id="locationHint">
-                Location is used to show nearby events. You can change it anytime.
-              </p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <!-- EVENTS (FILTERS + LIST) -->
-    <section id="view-events" class="view" aria-labelledby="eventsTitle" hidden>
-      <div class="view__header">
-        <h1 id="eventsTitle">Events</h1>
-        <p class="muted" id="resultsMeta" aria-live="polite"></p>
-      </div>
-
-      <section class="card card--panel" aria-labelledby="filtersTitle">
-        <div class="card__header">
-          <h2 id="filtersTitle">Filters</h2>
-        </div>
-
-        <div class="card__body">
-          <form id="filtersForm" class="filters" autocomplete="off">
-            <div class="field">
-              <label class="label" for="q">Search</label>
-              <input id="q" class="input" type="search" placeholder="Name or venue…" aria-describedby="qHelp" />
-              <div id="qHelp" class="help">Type to filter by event name or location.</div>
-            </div>
-
-            <div class="field">
-              <label class="label" for="category">Category</label>
-              <select id="category" class="input">
-                <option value="">All categories</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label class="label" for="date">Date</label>
-              <input id="date" class="input" type="date" />
-            </div>
-
-            <div class="field field--actions">
-              <button id="resetBtn" class="btn btn--ghost" type="button">Reset</button>
-              <button class="btn btn--primary" type="submit">Apply</button>
-            </div>
-          </form>
-        </div>
+    <div class="grid">
+      <section class="card card--panel" aria-labelledby="featuredTitle">
+        <div class="card__header"><h2 id="featuredTitle">Featured Events</h2></div>
+        <div class="card__body"><div id="featuredGrid" class="cards"></div></div>
       </section>
 
-      <section class="card card--panel" aria-labelledby="listTitle">
-        <div class="card__header">
-          <h2 id="listTitle">Event List</h2>
-        </div>
-        <div class="card__body">
-          <div id="eventsGrid" class="cards"></div>
-          <div id="emptyState" class="empty" hidden>
-            <p>No events match your filters.</p>
+      <section class="card card--panel" aria-labelledby="upcomingTitle">
+        <div class="card__header"><h2 id="upcomingTitle">Upcoming Events</h2></div>
+        <div class="card__body"><div id="upcomingGrid" class="cards"></div></div>
+      </section>
+
+      <section class="card card--panel" aria-labelledby="locationTitle">
+        <div class="card__header"><h2 id="locationTitle">Select Location</h2></div>
+
+        <div class="card__body location">
+          <div class="map-placeholder" aria-label="Map placeholder" role="img">Map (placeholder)</div>
+
+          <div class="location__controls">
+            <button id="useGpsBtn" class="btn btn--primary" type="button">Use my current location (GPS)</button>
+
+            <div class="divider" role="separator" aria-label="Or"></div>
+
+            <label class="label" for="citySelect">Or choose a city</label>
+            <select id="citySelect" class="input">
+              <option value="">Select city</option>
+            </select>
+
+            <p class="hint">Location is used to show nearby events. You can change it anytime.</p>
           </div>
         </div>
       </section>
-    </section>
-
-    <!-- EVENT DETAIL -->
-    <section id="view-detail" class="view" aria-labelledby="detailTitle" hidden>
-      <button id="backBtn" class="linklike" type="button">← Back</button>
-
-      <div class="detail">
-        <div class="detail__media" role="img" aria-label="Event image placeholder">
-          Image placeholder
-        </div>
-
-        <aside class="detail__actions" aria-label="Event actions">
-          <button id="addToListBtn" class="btn btn--primary" type="button">Add to My List</button>
-          <button id="reserveBtn" class="btn btn--accent" type="button">Reserve / Register</button>
-
-          <div class="share card card--sub" aria-label="Share event">
-            <div class="card__header">
-              <h3>Share</h3>
-            </div>
-            <div class="card__body share__buttons">
-              <button class="btn btn--share" data-share="copy" type="button">Copy link</button>
-              <button class="btn btn--share" data-share="twitter" type="button">X</button>
-              <button class="btn btn--share" data-share="facebook" type="button">Facebook</button>
-            </div>
-          </div>
-        </aside>
-
-        <article class="detail__info">
-          <h1 id="detailTitle"></h1>
-
-          <ul class="meta" id="detailMeta"></ul>
-
-          <p id="detailDesc"></p>
-
-          <section class="card card--sub" aria-labelledby="extraTitle">
-            <div class="card__header">
-              <h2 id="extraTitle">Additional details</h2>
-            </div>
-            <div class="card__body">
-              <ul class="bullets" id="detailExtra"></ul>
-            </div>
-          </section>
-        </article>
-      </div>
-    </section>
-
-    <!-- MY LIST / PROFILE -->
-    <section id="view-mylist" class="view" aria-labelledby="myListTitle" hidden>
-      <div class="profile card card--panel">
-        <div class="profile__row">
-          <div class="avatar" aria-hidden="true">J</div>
-          <div>
-            <h1 id="myListTitle">My List</h1>
-            <p class="muted" id="profileSub">Not logged in</p>
-          </div>
-          <div class="profile__right">
-            <button id="logoutBtn" class="btn btn--ghost" type="button" hidden>Logout</button>
-          </div>
-        </div>
-
-        <div class="stats">
-          <div class="stat stat--accent">
-            <div class="stat__label">Reserved</div>
-            <div class="stat__value" id="reservedCount">0</div>
-          </div>
-          <div class="stat stat--primary">
-            <div class="stat__label">Saved</div>
-            <div class="stat__value" id="savedCount">0</div>
-          </div>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="My List tabs">
-          <button class="tab is-active" id="tabReserved" role="tab" aria-selected="true" aria-controls="panelReserved" type="button">
-            Reserved
-          </button>
-          <button class="tab" id="tabSaved" role="tab" aria-selected="false" aria-controls="panelSaved" type="button">
-            Saved
-          </button>
-        </div>
-
-        <div class="panels">
-          <div id="panelReserved" role="tabpanel" aria-labelledby="tabReserved">
-            <div id="reservedGrid" class="cards"></div>
-            <div class="empty" id="reservedEmpty" hidden><p>No reserved events yet.</p></div>
-          </div>
-
-          <div id="panelSaved" role="tabpanel" aria-labelledby="tabSaved" hidden>
-            <div id="savedGrid" class="cards"></div>
-            <div class="empty" id="savedEmpty" hidden><p>No saved events yet.</p></div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
   <footer class="footer" role="contentinfo">
-    <small>© <span id="year"></span> Eventos Culturales. All rights reserved.</small>
+    <small>© <span id="year"></span> Eventos Culturales</small>
   </footer>
 
   <!-- LOGIN MODAL -->
@@ -247,7 +79,6 @@
 
       <div class="modal__body">
         <p class="muted">Choose a sign-in method:</p>
-
         <div class="stack">
           <button class="btn btn--provider" type="button" data-provider="microsoft">Continue with Microsoft Entra ID</button>
           <button class="btn btn--provider" type="button" data-provider="google">Continue with Google</button>
@@ -261,34 +92,14 @@
             <label class="label" for="email">Email</label>
             <input id="email" class="input" type="email" required autocomplete="email" />
           </div>
-
           <div class="field">
             <label class="label" for="password">Password</label>
             <input id="password" class="input" type="password" required minlength="6" autocomplete="current-password" />
-            <div class="help" id="pwHelp">Minimum 6 characters.</div>
+            <div class="help">Minimum 6 characters.</div>
           </div>
-
           <div class="alert" id="loginError" role="alert" hidden></div>
-
           <button class="btn btn--primary" type="submit">Sign in</button>
         </form>
-
-        <p class="tiny muted">
-          By signing in, you accept the Terms and Privacy Policy.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRMATION MODAL -->
-  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
-    <div class="modal__backdrop" data-close="confirm"></div>
-    <div class="modal__panel modal__panel--center" role="document">
-      <div class="modal__body modal__body--center">
-        <div class="check" aria-hidden="true">✓</div>
-        <h2 id="confirmTitle">Reservation/Registration confirmed!</h2>
-        <p class="muted" id="confirmText">Your reservation is confirmed.</p>
-        <button id="goMyListBtn" class="btn btn--primary" type="button">Go to My List</button>
       </div>
     </div>
   </div>
